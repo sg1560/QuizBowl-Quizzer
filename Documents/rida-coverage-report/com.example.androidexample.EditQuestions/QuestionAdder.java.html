@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>QuestionAdder.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=0;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">debug</a> &gt; <a href="index.source.html" class="el_package">com.example.androidexample.EditQuestions</a> &gt; <span class="el_source">QuestionAdder.java</span></div><h1>QuestionAdder.java</h1><pre class="source lang-java linenums">package com.example.androidexample.EditQuestions;
+
+import android.os.Bundle;
+
+import androidx.fragment.app.FragmentActivity;
+import androidx.lifecycle.ViewModelProvider;
+
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.RadioButton;
+import android.widget.TextView;
+
+import com.example.androidexample.R;
+import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
+import com.google.android.material.textfield.TextInputEditText;
+
+// Fragment where I can add/edit questions
+public class QuestionAdder extends BottomSheetDialogFragment {
+
+    private AddQuestionsModel addQuestionsModel;
+    private Button saveButton, deleteButton;
+
+    private TextInputEditText question, answer;
+    private TextView errorMessage, questionTitle;
+    private QuestionObject questionObject;
+    private RadioButton scienceBtn, historyBtn, fineArtsBtn, popCultureBtn, geographyBtn;
+
+    public QuestionAdder() {
+<span class="fc" id="L31">        super(R.layout.fragment_question_adder);</span>
+<span class="fc" id="L32">    }</span>
+
+    // Constructor with QuestionObject allows me to edit questions
+    public QuestionAdder(QuestionObject object) {
+<span class="nc" id="L36">        super(R.layout.fragment_question_adder);</span>
+<span class="nc" id="L37">        questionObject = object;</span>
+<span class="nc" id="L38">    }</span>
+
+
+    @Override
+    public void onViewCreated(View view, Bundle savedInstanceState) {
+<span class="fc" id="L43">        super.onCreate(savedInstanceState);</span>
+<span class="fc" id="L44">        FragmentActivity activity = requireActivity();</span>
+<span class="fc" id="L45">        addQuestionsModel = new ViewModelProvider(activity).get(AddQuestionsModel.class);</span>
+<span class="fc" id="L46">    }</span>
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+<span class="fc" id="L51">        View rootView = inflater.inflate(R.layout.fragment_question_adder, container, false);</span>
+
+        // Initialize everything
+<span class="fc" id="L54">        saveButton = (Button) rootView.findViewById(R.id.btnSave);</span>
+<span class="fc" id="L55">        question = (TextInputEditText) rootView.findViewById(R.id.question);</span>
+<span class="fc" id="L56">        answer = (TextInputEditText) rootView.findViewById(R.id.answer);</span>
+<span class="fc" id="L57">        deleteButton = (Button) rootView.findViewById(R.id.btnDelete);</span>
+
+<span class="fc" id="L59">        scienceBtn = (RadioButton) rootView.findViewById(R.id.radioScience);</span>
+<span class="fc" id="L60">        historyBtn = (RadioButton) rootView.findViewById(R.id.radioHistory);</span>
+<span class="fc" id="L61">        fineArtsBtn = (RadioButton) rootView.findViewById(R.id.radioFineArts);</span>
+<span class="fc" id="L62">        geographyBtn = (RadioButton) rootView.findViewById(R.id.radioGeography);</span>
+<span class="fc" id="L63">        popCultureBtn = (RadioButton) rootView.findViewById(R.id.radioPopCulture);</span>
+
+<span class="fc" id="L65">        errorMessage = (TextView) rootView.findViewById(R.id.errorMessage);</span>
+<span class="fc" id="L66">        errorMessage.setVisibility(View.INVISIBLE);</span>
+
+        // If we're editing a question, change title and load old question/answer text
+<span class="fc" id="L69">        questionTitle = (TextView) rootView.findViewById(R.id.questionAdderTitle);</span>
+<span class="pc bpc" id="L70" title="1 of 2 branches missed.">        if (questionObject != null) {</span>
+<span class="nc" id="L71">            questionTitle.setText(&quot;Edit Question&quot;);</span>
+<span class="nc" id="L72">            question.setText(questionObject.getQuestion());</span>
+<span class="nc" id="L73">            answer.setText(questionObject.getAnswer());</span>
+<span class="nc bnc" id="L74" title="All 5 branches missed.">            switch (questionObject.getCategory()) {</span>
+                case &quot;History&quot;:
+<span class="nc" id="L76">                    historyBtn.setChecked(true);</span>
+<span class="nc" id="L77">                    break;</span>
+                case &quot;Fine Arts&quot;:
+<span class="nc" id="L79">                    fineArtsBtn.setChecked(true);</span>
+<span class="nc" id="L80">                    break;</span>
+                case &quot;Geography&quot;:
+<span class="nc" id="L82">                    geographyBtn.setChecked(true);</span>
+<span class="nc" id="L83">                    break;</span>
+                case &quot;Pop Culture&quot;:
+<span class="nc" id="L85">                    popCultureBtn.setChecked(true);</span>
+<span class="nc" id="L86">                    break;</span>
+                default:
+<span class="nc" id="L88">                    scienceBtn.setChecked(true);</span>
+                    break;
+            }
+
+<span class="nc" id="L92">            deleteButton.setVisibility(View.VISIBLE);</span>
+        } else {
+<span class="fc" id="L94">            questionTitle.setText(&quot;New Question&quot;);</span>
+<span class="fc" id="L95">            deleteButton.setVisibility(View.INVISIBLE);</span>
+        }
+
+        // When we click save
+<span class="fc" id="L99">        saveButton.setOnClickListener(new View.OnClickListener() {</span>
+            @Override
+            public void onClick(View view) {
+<span class="nc" id="L102">                String q = (String.valueOf(question.getText()));</span>
+<span class="nc" id="L103">                String a = (String.valueOf(answer.getText()));</span>
+<span class="nc" id="L104">                String c = getCategory();</span>
+                // If user has selected all the fields
+<span class="nc bnc" id="L106" title="All 4 branches missed.">                if (fieldsFilled() &amp;&amp; categoryChecked()) {</span>
+                    // If we're editing object, hide alerts and edit the question object, send alert through the model
+<span class="nc bnc" id="L108" title="All 2 branches missed.">                    if (questionObject != null) {</span>
+<span class="nc" id="L109">                        errorMessage.setVisibility(View.INVISIBLE);</span>
+<span class="nc" id="L110">                        questionObject.setQuestion(q, a, c);</span>
+<span class="nc" id="L111">                        addQuestionsModel.setEdited(questionObject);</span>
+<span class="nc" id="L112">                        dismiss();</span>
+                    } else {
+                        // Else add new object to the list
+<span class="nc" id="L115">                        errorMessage.setVisibility(View.INVISIBLE);</span>
+<span class="nc" id="L116">                        addQuestionsModel.selectObject(new QuestionObject(-1, q, a, c, -1));</span>
+<span class="nc" id="L117">                        dismiss();</span>
+                    }
+                } else {
+<span class="nc bnc" id="L120" title="All 4 branches missed.">                    if (!categoryChecked() &amp;&amp; !fieldsFilled()) {</span>
+<span class="nc" id="L121">                        errorMessage.setText(&quot;Please enter a question, answer, and select a category&quot;);</span>
+<span class="nc bnc" id="L122" title="All 2 branches missed.">                    } else if (!fieldsFilled()) {</span>
+<span class="nc" id="L123">                        errorMessage.setText(&quot;Please fill out both fields&quot;);</span>
+                    } else {
+<span class="nc" id="L125">                        errorMessage.setText(&quot;Please choose a category&quot;);</span>
+                    }
+<span class="nc" id="L127">                    errorMessage.setVisibility(View.VISIBLE);</span>
+                }
+<span class="nc" id="L129">            }</span>
+        });
+
+<span class="fc" id="L132">        deleteButton.setOnClickListener(new View.OnClickListener() {</span>
+            @Override
+            public void onClick(View view) {
+<span class="nc" id="L135">                addQuestionsModel.deleteQuestion(questionObject);</span>
+<span class="nc" id="L136">                dismiss();</span>
+<span class="nc" id="L137">            }</span>
+        });
+
+        // Inflate the layout for this fragment
+<span class="fc" id="L141">        return rootView;</span>
+    }
+
+    public String getCategory() {
+<span class="nc bnc" id="L145" title="All 2 branches missed.">        if (scienceBtn.isChecked()) {</span>
+<span class="nc" id="L146">            return &quot;Science&quot;;</span>
+<span class="nc bnc" id="L147" title="All 2 branches missed.">        } else if (geographyBtn.isChecked()) {</span>
+<span class="nc" id="L148">            return &quot;Geography&quot;;</span>
+<span class="nc bnc" id="L149" title="All 2 branches missed.">        } else if (fineArtsBtn.isChecked()) {</span>
+<span class="nc" id="L150">            return &quot;Fine Arts&quot;;</span>
+<span class="nc bnc" id="L151" title="All 2 branches missed.">        } else if (historyBtn.isChecked()) {</span>
+<span class="nc" id="L152">            return &quot;History&quot;;</span>
+        }
+<span class="nc" id="L154">        return &quot;Pop Culture&quot;;</span>
+    }
+
+    private Boolean categoryChecked() {
+<span class="nc bnc" id="L158" title="All 10 branches missed.">        return (scienceBtn.isChecked() || geographyBtn.isChecked() || fineArtsBtn.isChecked() || historyBtn.isChecked() || popCultureBtn.isChecked());</span>
+    }
+
+    private Boolean fieldsFilled() {
+<span class="nc bnc" id="L162" title="All 4 branches missed.">        return !String.valueOf(question.getText()).equals(&quot;&quot;) &amp;&amp; !String.valueOf(answer.getText()).equals(&quot;&quot;);</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span>Generated by the Android Gradle plugin 7.4.2</div></body></html>

@@ -1,0 +1,240 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="@color/white">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="120dp"
+            android:background="@color/header_blue"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/pageTitle"
+                android:layout_width="fill_parent"
+                android:layout_height="97dp"
+                android:layout_gravity="center_horizontal"
+                android:layout_margin="20dp"
+                android:fontFamily="@font/roboto_light"
+                android:gravity="center"
+                android:text="Study"
+                android:textAlignment="center"
+                android:textColor="@color/white"
+                android:textSize="36sp" />
+
+        </LinearLayout>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginTop="50dp"
+            android:fontFamily="@font/roboto_bold"
+            android:text="History"
+            android:textColor="@color/history_red"
+            android:textSize="18dp">
+
+        </TextView>
+
+        <Button
+            android:id="@+id/btnHistory"
+            android:layout_width="90dp"
+            android:layout_height="95dp"
+            android:layout_gravity="center"
+            android:layout_marginTop="5dp"
+            android:backgroundTint="@color/history_red" />
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_marginTop="20dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <LinearLayout
+                android:id="@+id/popCultureWrapper"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/allWrapper"
+                app:layout_constraintTop_toTopOf="parent"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:fontFamily="@font/roboto_bold"
+                    android:text="Pop Culture"
+                    android:textColor="@color/pop_culture_purple"
+                    android:textSize="18dp" />
+
+                <Button
+                    android:id="@+id/btnPopCulture"
+                    android:layout_width="90dp"
+                    android:layout_height="95dp"
+                    android:layout_gravity="center"
+                    android:backgroundTint="@color/pop_culture_purple" />
+            </LinearLayout>
+            <LinearLayout
+                android:id="@+id/allWrapper"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:fontFamily="@font/roboto_bold"
+                    android:text="All"
+                    android:textColor="@color/all_grey"
+                    android:textSize="18dp" />
+
+                <Button
+                    android:id="@+id/btnAll"
+                    android:layout_width="90dp"
+                    android:layout_height="95dp"
+                    android:layout_gravity="center"
+                    android:backgroundTint="@color/all_grey" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/scienceWrapper"
+                app:layout_constraintStart_toEndOf="@id/allWrapper"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:fontFamily="@font/roboto_bold"
+                    android:text="Science"
+                    android:textColor="@color/science_green"
+                    android:textSize="18dp" />
+
+                <Button
+                    android:id="@+id/btnScience"
+                    android:layout_width="90dp"
+                    android:layout_height="95dp"
+                    android:layout_gravity="center"
+                    android:backgroundTint="@color/science_green" />
+            </LinearLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:orientation="horizontal">
+
+            <LinearLayout
+                android:id="@+id/fineArtsWrapper"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/geographyWrapper"
+                app:layout_constraintTop_toTopOf="parent"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:fontFamily="@font/roboto_bold"
+                    android:text="Fine Arts"
+                    android:textColor="@color/fine_arts_blue"
+                    android:textSize="18dp" />
+
+                <Button
+                    android:id="@+id/btnFineArts"
+                    android:layout_width="90dp"
+                    android:layout_height="95dp"
+                    android:layout_gravity="center"
+                    android:backgroundTint="@color/fine_arts_blue" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/geographyWrapper"
+                app:layout_constraintStart_toEndOf="@id/fineArtsWrapper"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:fontFamily="@font/roboto_bold"
+                    android:text="Geography"
+                    android:textColor="@color/geography_yellow"
+                    android:textSize="18dp" />
+
+                <Button
+                    android:id="@+id/btnGeography"
+                    android:layout_width="90dp"
+                    android:layout_height="95dp"
+                    android:layout_gravity="center"
+                    android:backgroundTint="@color/geography_yellow" />
+            </LinearLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <Spinner
+                android:layout_marginTop="20dp"
+                android:id="@+id/session_dropdown"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
+
+            </Spinner>
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </LinearLayout>
+
+    <androidx.coordinatorlayout.widget.CoordinatorLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true">
+        <com.google.android.material.bottomappbar.BottomAppBar
+            android:layout_width="match_parent"
+            android:layout_height="75dp"
+            android:id="@+id/bottomAppBar"
+            android:layout_gravity="bottom"
+            android:backgroundTint="@color/header_blue"
+            app:fabCradleMargin="10dp"
+            app:fabCradleRoundedCornerRadius="70dp">
+            <com.google.android.material.bottomnavigation.BottomNavigationView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/bottomNavigationView"
+                android:layout_marginEnd="20dp"
+                android:background="@android:color/transparent"
+                app:labelVisibilityMode="labeled"
+                app:menu="@menu/bottom_nav"
+                style="@style/Widget.MaterialComponents.BottomNavigationView.PrimarySurface"
+                app:itemTextColor="@drawable/nav_bar_colors"
+                app:itemIconTint="@drawable/nav_bar_colors"/>
+        </com.google.android.material.bottomappbar.BottomAppBar>
+    </androidx.coordinatorlayout.widget.CoordinatorLayout>
+</RelativeLayout>

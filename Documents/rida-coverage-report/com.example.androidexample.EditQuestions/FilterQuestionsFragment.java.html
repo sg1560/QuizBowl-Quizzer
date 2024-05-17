@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>FilterQuestionsFragment.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=0;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">debug</a> &gt; <a href="index.source.html" class="el_package">com.example.androidexample.EditQuestions</a> &gt; <span class="el_source">FilterQuestionsFragment.java</span></div><h1>FilterQuestionsFragment.java</h1><pre class="source lang-java linenums">package com.example.androidexample.EditQuestions;
+
+import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.RadioButton;
+import android.widget.TextView;
+
+import androidx.fragment.app.FragmentActivity;
+import androidx.lifecycle.ViewModelProvider;
+
+import com.example.androidexample.R;
+import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
+
+public class FilterQuestionsFragment extends BottomSheetDialogFragment {
+    private FilterQuestionsModel filterQuestionsModel;
+    private Button saveButton;
+
+    private TextView errorMessage;
+    private QuestionObject questionObject;
+    private RadioButton scienceBtn, historyBtn, fineArtsBtn, popCultureBtn, geographyBtn;
+
+    public FilterQuestionsFragment() {
+<span class="fc" id="L26">        super(R.layout.fragment_question_adder);</span>
+<span class="fc" id="L27">    }</span>
+    // Constructor with QuestionObject allows me to edit questions
+
+    @Override
+    public void onViewCreated(View view, Bundle savedInstanceState) {
+<span class="fc" id="L32">        super.onCreate(savedInstanceState);</span>
+<span class="fc" id="L33">        FragmentActivity activity = requireActivity();</span>
+<span class="fc" id="L34">        filterQuestionsModel = new ViewModelProvider(activity).get(FilterQuestionsModel.class);</span>
+<span class="fc" id="L35">    }</span>
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+<span class="fc" id="L40">        View rootView = inflater.inflate(R.layout.fragment_filter_questions, container, false);</span>
+
+        // Initialize everything
+<span class="fc" id="L43">        saveButton = (Button) rootView.findViewById(R.id.btnSave);</span>
+
+
+<span class="fc" id="L46">        scienceBtn = (RadioButton) rootView.findViewById(R.id.radioScience);</span>
+<span class="fc" id="L47">        historyBtn = (RadioButton) rootView.findViewById(R.id.radioHistory);</span>
+<span class="fc" id="L48">        fineArtsBtn = (RadioButton) rootView.findViewById(R.id.radioFineArts);</span>
+<span class="fc" id="L49">        geographyBtn = (RadioButton) rootView.findViewById(R.id.radioGeography);</span>
+<span class="fc" id="L50">        popCultureBtn = (RadioButton) rootView.findViewById(R.id.radioPopCulture);</span>
+
+<span class="fc" id="L52">        errorMessage = (TextView) rootView.findViewById(R.id.errorMessage);</span>
+<span class="fc" id="L53">        errorMessage.setVisibility(View.INVISIBLE);</span>
+<span class="fc" id="L54">        saveButton.setOnClickListener(new View.OnClickListener(){</span>
+            @Override
+            public void onClick(View view) {
+
+                // If user has selected all the fields
+<span class="nc bnc" id="L59" title="All 2 branches missed.">                if (categoryChecked()){</span>
+<span class="nc" id="L60">                    filterQuestionsModel.setCategory(getCheckedCategory());</span>
+<span class="nc" id="L61">                    dismiss();</span>
+                }
+                else{
+<span class="nc" id="L64">                    errorMessage.setText(&quot;Please choose a category&quot;);</span>
+<span class="nc" id="L65">                    errorMessage.setVisibility(View.VISIBLE);</span>
+                }
+<span class="nc" id="L67">            }</span>
+        });
+<span class="fc" id="L69">        return rootView;</span>
+    }
+    private Boolean categoryChecked(){
+<span class="nc bnc" id="L72" title="All 10 branches missed.">        return (scienceBtn.isChecked() || geographyBtn.isChecked() || fineArtsBtn.isChecked() || historyBtn.isChecked() || popCultureBtn.isChecked());</span>
+    }
+
+    private String getCheckedCategory(){
+<span class="nc bnc" id="L76" title="All 2 branches missed.">        if (scienceBtn.isChecked()){</span>
+<span class="nc" id="L77">            return &quot;Science&quot;;</span>
+        }
+<span class="nc bnc" id="L79" title="All 2 branches missed.">        if (geographyBtn.isChecked()) {</span>
+<span class="nc" id="L80">            return &quot;Geography&quot;;</span>
+        }
+<span class="nc bnc" id="L82" title="All 2 branches missed.">        if (fineArtsBtn.isChecked()){</span>
+<span class="nc" id="L83">            return &quot;Fine Arts&quot;;</span>
+        }
+<span class="nc bnc" id="L85" title="All 2 branches missed.">        if (historyBtn.isChecked()){</span>
+<span class="nc" id="L86">            return &quot;History&quot;;</span>
+        }
+<span class="nc" id="L88">        return &quot;Pop Culture&quot;;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span>Generated by the Android Gradle plugin 7.4.2</div></body></html>

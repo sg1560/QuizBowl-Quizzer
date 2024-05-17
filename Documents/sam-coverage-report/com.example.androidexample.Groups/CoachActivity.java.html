@@ -1,0 +1,303 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>CoachActivity.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=0;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">debug</a> &gt; <a href="index.source.html" class="el_package">com.example.androidexample.Groups</a> &gt; <span class="el_source">CoachActivity.java</span></div><h1>CoachActivity.java</h1><pre class="source lang-java linenums">package com.example.androidexample.Groups;
+
+import android.content.Context;
+import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.ListView;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.ImageRequest;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
+import com.example.androidexample.MainActivity;
+import com.example.androidexample.R;
+import com.example.androidexample.User.UserObject;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Scanner;
+
+<span class="nc" id="L43">public class CoachActivity extends AppCompatActivity implements Serializable {</span>
+    private Button createGroup, coach, listAll, home, deleteGroup;
+    private TextView welcome;
+    private RequestQueue queue;
+    private UserObject user;
+    private String username, password, url;
+<span class="nc" id="L49">    private long teamID = -1;</span>
+    ListView listView;
+<span class="nc" id="L51">    ArrayList&lt;String&gt; mTitle = new ArrayList&lt;String&gt;();</span>
+<span class="nc" id="L52">    ArrayList&lt;String&gt; mDescription = new ArrayList&lt;String&gt;();</span>
+<span class="nc" id="L53">    ArrayList&lt;Bitmap&gt; mImages = new ArrayList&lt;Bitmap&gt;();</span>
+    MyAdapter adapter;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+<span class="nc" id="L58">        super.onCreate(savedInstanceState);</span>
+<span class="nc" id="L59">        setContentView(R.layout.groups_layout);</span>
+<span class="nc" id="L60">        user = (UserObject) getIntent().getSerializableExtra(&quot;USER&quot;);</span>
+<span class="nc" id="L61">        username = user.getUserName();</span>
+<span class="nc" id="L62">        password = user.getPassword();</span>
+<span class="nc bnc" id="L63" title="All 2 branches missed.">        if (user.getGroupID() == 0) {</span>
+<span class="nc" id="L64">            Intent intent = new Intent(CoachActivity.this, GroupJoinActivity.class);</span>
+<span class="nc" id="L65">            intent.putExtra(&quot;USER&quot;, user);</span>
+<span class="nc" id="L66">            startActivity(intent);</span>
+        }
+<span class="nc" id="L68">        createGroup = findViewById(R.id.createGroupButton);</span>
+<span class="nc" id="L69">        welcome = findViewById(R.id.welcome);</span>
+        //joinGroup = findViewById(R.id.joinGroupButton);
+<span class="nc" id="L71">        listAll = findViewById(R.id.listAllGroupsButton);</span>
+<span class="nc" id="L72">        home = findViewById(R.id.backToHomeButton);</span>
+<span class="nc" id="L73">        deleteGroup = findViewById(R.id.deleteGroup);</span>
+<span class="nc" id="L74">        queue = Volley.newRequestQueue(this);</span>
+<span class="nc" id="L75">        listView = findViewById(R.id.groupListView);</span>
+<span class="nc" id="L76">        coach = findViewById(R.id.coachButton);</span>
+<span class="nc" id="L77">        coach.setVisibility(View.INVISIBLE);</span>
+        // now create an adapter class
+
+
+<span class="nc" id="L81">        adapter = new MyAdapter(this, mTitle, mDescription, mImages);</span>
+<span class="nc" id="L82">        listView.setAdapter(adapter);</span>
+<span class="nc" id="L83">        url = MainActivity.httpServerAddress + &quot;/users/login?username=&quot; + username + &quot;&amp;password=&quot; + password;</span>
+<span class="nc" id="L84">        JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, url, null, new Response.Listener&lt;JSONObject&gt;() {</span>
+            @Override
+            public void onResponse(JSONObject response) {
+                try {
+<span class="nc" id="L88">                    JSONArray jsonArray = response.getJSONArray(&quot;teams&quot;);</span>
+<span class="nc" id="L89">                    JSONObject teams = jsonArray.getJSONObject(0);</span>
+<span class="nc" id="L90">                    String teamName = teams.getString(&quot;name&quot;);</span>
+<span class="nc" id="L91">                    teamID = teams.getInt(&quot;tid&quot;);</span>
+<span class="nc" id="L92">                    welcome.append(&quot;Welcome back to team &quot; + teamName + &quot;!&quot;);</span>
+<span class="nc" id="L93">                    onSuccess(url);</span>
+<span class="nc" id="L94">                } catch (JSONException e) {</span>
+<span class="nc" id="L95">                    welcome.append(&quot;You are not currently in a team&quot;);</span>
+<span class="nc" id="L96">                }</span>
+
+<span class="nc" id="L98">            }</span>
+<span class="nc" id="L99">        }, new Response.ErrorListener() {</span>
+            @Override
+            public void onErrorResponse(VolleyError volleyError) {
+<span class="nc" id="L102">                Toast.makeText(getApplicationContext(), &quot;Connection error!&quot;, Toast.LENGTH_SHORT).show();</span>
+<span class="nc" id="L103">            }</span>
+        });
+<span class="nc" id="L105">        queue.add(request);</span>
+
+<span class="nc" id="L107">        createGroup.setOnClickListener(new View.OnClickListener() {</span>
+            @Override
+            public void onClick(View v) {
+<span class="nc" id="L110">                Intent intent = new Intent(CoachActivity.this, UserAddToGroupActivity.class);</span>
+<span class="nc" id="L111">                intent.putExtra(&quot;USER&quot;, user);</span>
+<span class="nc" id="L112">                intent.putExtra(&quot;teamID&quot;, teamID);</span>
+<span class="nc" id="L113">                startActivity(intent);</span>
+<span class="nc" id="L114">            }</span>
+        });
+
+<span class="nc" id="L117">        listAll.setOnClickListener(new View.OnClickListener() {</span>
+            @Override
+            public void onClick(View view) {
+<span class="nc" id="L120">                Intent intent = new Intent(CoachActivity.this, ListAllGroupsActivity.class);</span>
+<span class="nc" id="L121">                intent.putExtra(&quot;USER&quot;, user);</span>
+<span class="nc" id="L122">                startActivity(intent);</span>
+<span class="nc" id="L123">            }</span>
+        });
+
+<span class="nc" id="L126">        home.setOnClickListener(new View.OnClickListener() {</span>
+            @Override
+            public void onClick(View view) {
+<span class="nc" id="L129">                Intent intent = new Intent(CoachActivity.this, GroupPageActivity.class);</span>
+<span class="nc" id="L130">                intent.putExtra(&quot;USER&quot;, user);</span>
+<span class="nc" id="L131">                startActivity(intent);</span>
+<span class="nc" id="L132">            }</span>
+        });
+
+<span class="nc" id="L135">        deleteGroup.setOnClickListener(new View.OnClickListener() {</span>
+            @Override
+            public void onClick(View view) {
+<span class="nc" id="L138">                url = MainActivity.httpServerAddress + &quot;/teams/deletebyid/&quot; + teamID;</span>
+<span class="nc" id="L139">                JsonObjectRequest request = new JsonObjectRequest(Request.Method.DELETE, url, null, new Response.Listener&lt;JSONObject&gt;() {</span>
+                    @Override
+                    public void onResponse(JSONObject response) {
+<span class="nc" id="L142">                        StringRequest request1 = new StringRequest(Request.Method.DELETE, MainActivity.httpServerAddress + &quot;/coach/delete/&quot; + teamID, null, new Response.ErrorListener() {</span>
+                            @Override
+                            public void onErrorResponse(VolleyError volleyError) {
+<span class="nc" id="L145">                                volleyError.printStackTrace();</span>
+<span class="nc" id="L146">                            }</span>
+                        });
+<span class="nc" id="L148">                        queue.add(request1);</span>
+<span class="nc" id="L149">                        user.joinGroup(0);</span>
+<span class="nc" id="L150">                        Intent intent = new Intent(CoachActivity.this, MainActivity.class);</span>
+<span class="nc" id="L151">                        intent.putExtra(&quot;USER&quot;, user);</span>
+<span class="nc" id="L152">                        startActivity(intent);</span>
+<span class="nc" id="L153">                    }</span>
+<span class="nc" id="L154">                }, new Response.ErrorListener() {</span>
+                    @Override
+                    public void onErrorResponse(VolleyError volleyError) {
+<span class="nc" id="L157">                        Toast.makeText(getApplicationContext(), &quot;Cannot delete team!&quot;, Toast.LENGTH_SHORT).show();</span>
+<span class="nc" id="L158">                    }</span>
+                });
+<span class="nc" id="L160">                queue.add(request);</span>
+<span class="nc" id="L161">            }</span>
+        });
+
+<span class="nc" id="L164">        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {</span>
+            @Override
+            public void onItemClick(AdapterView&lt;?&gt; adapterView, View view, int i, long l) {
+<span class="nc" id="L167">                JsonObjectRequest request = new JsonObjectRequest(Request.Method.PUT, MainActivity.httpServerAddress + &quot;/teams/getbyid/&quot; + teamID+&quot;/removeuser/&quot;+(i+1), null, new Response.Listener&lt;JSONObject&gt;() {</span>
+                    @Override
+                    public void onResponse(JSONObject jsonObject) {
+<span class="nc" id="L170">                        mTitle.remove(i);</span>
+<span class="nc" id="L171">                        mDescription.remove(i);</span>
+<span class="nc" id="L172">                        mImages.remove(i);</span>
+
+                        // Notify the adapter that the data has changed
+<span class="nc" id="L175">                        adapter.notifyDataSetChanged();</span>
+
+<span class="nc" id="L177">                        Toast.makeText(getApplicationContext(), &quot;User removed from group&quot;, Toast.LENGTH_SHORT).show();</span>
+<span class="nc" id="L178">                    }</span>
+<span class="nc" id="L179">                }, new Response.ErrorListener() {</span>
+                    @Override
+                    public void onErrorResponse(VolleyError volleyError) {
+<span class="nc" id="L182">                        volleyError.printStackTrace();</span>
+<span class="nc" id="L183">                    }</span>
+                });
+<span class="nc" id="L185">                queue.add(request);</span>
+<span class="nc" id="L186">            }</span>
+        });
+<span class="nc" id="L188">    }</span>
+
+    private void onSuccess(String url) {
+<span class="nc" id="L191">        url = MainActivity.httpServerAddress + &quot;/teams/getbyid/&quot; + teamID;</span>
+<span class="nc" id="L192">        JsonObjectRequest request2 = new JsonObjectRequest(Request.Method.GET, url, null, new Response.Listener&lt;JSONObject&gt;() {</span>
+            @Override
+            public void onResponse(JSONObject response) {
+                try {
+//                    if(response.getJSONObject(&quot;coach&quot;).equals(user.getUserName()) || user.isAdmin()){
+//                        Intent intent = new Intent(GroupPageActivity.this, CoachActivity.class);
+//                        intent.putExtra(&quot;USER&quot;, user);
+//                        startActivity(intent);
+//                    }
+//                    memberList.append(&quot;The coach of this group is &quot; + response.getJSONObject(&quot;coach&quot;).getString(&quot;userName&quot;) + &quot;\n\n&quot;);
+<span class="nc" id="L202">                    JSONArray jsonArray = response.getJSONArray(&quot;members&quot;);</span>
+<span class="nc bnc" id="L203" title="All 2 branches missed.">                    for (int i = 0; i &lt; jsonArray.length(); i++) {</span>
+<span class="nc" id="L204">                        JSONObject member = jsonArray.getJSONObject(i);</span>
+                        //int userNum = i + 1;
+                        //memberList.append(&quot;Member #&quot; + userNum + &quot; is &quot; + member.getString(&quot;userName&quot;) + &quot;\n\n&quot;);
+<span class="nc" id="L207">                        mTitle.add(member.getString(&quot;userName&quot;));</span>
+<span class="nc" id="L208">                        int id = member.getInt(&quot;cid&quot;);</span>
+<span class="nc" id="L209">                        StringRequest stringRequest = new StringRequest(Request.Method.GET, MainActivity.httpServerAddress + &quot;/users/getbyid/&quot; + id + &quot;/getquestioncorrectpercentage&quot;, new Response.Listener&lt;String&gt;() {</span>
+                            @Override
+                            public void onResponse(String s) {
+<span class="nc" id="L212">                                Scanner scan = new Scanner(s);</span>
+<span class="nc" id="L213">                                scan.useDelimiter(&quot;\&quot;&quot;);</span>
+<span class="nc" id="L214">                                String test = scan.next();</span>
+<span class="nc" id="L215">                                mDescription.add(test);</span>
+<span class="nc" id="L216">                                scan.close();</span>
+<span class="nc" id="L217">                                adapter.notifyDataSetChanged();</span>
+<span class="nc" id="L218">                            }</span>
+<span class="nc" id="L219">                        }, new Response.ErrorListener() {</span>
+                            @Override
+                            public void onErrorResponse(VolleyError volleyError) {
+<span class="nc" id="L222">                                volleyError.printStackTrace();</span>
+<span class="nc" id="L223">                            }</span>
+                        });
+<span class="nc" id="L225">                        queue.add(stringRequest);</span>
+<span class="nc" id="L226">                        ImageRequest imageRequest = new ImageRequest(MainActivity.httpServerAddress + &quot;/image/getbyid/&quot; + id, new Response.Listener&lt;Bitmap&gt;() {</span>
+                            @Override
+                            public void onResponse(Bitmap bitmap) {
+<span class="nc" id="L229">                                mImages.add(bitmap);</span>
+<span class="nc" id="L230">                                adapter.notifyDataSetChanged();</span>
+<span class="nc" id="L231">                            }</span>
+                        }, 0, // Width, set to 0 to get the original width
+                                0, // Height, set to 0 to get the original height
+                                ImageView.ScaleType.FIT_XY, // ScaleType
+                                Bitmap.Config.RGB_565, // Bitmap config
+<span class="nc" id="L236">                                new Response.ErrorListener() {</span>
+                                    @Override
+                                    public void onErrorResponse(VolleyError volleyError) {
+<span class="nc" id="L239">                                        Bitmap bitmapFromDrawable = getBitmapFromDrawable(CoachActivity.this, R.drawable.profilepicturesample);</span>
+<span class="nc" id="L240">                                        mImages.add(bitmapFromDrawable);</span>
+<span class="nc" id="L241">                                        adapter.notifyDataSetChanged();</span>
+<span class="nc" id="L242">                                    }</span>
+                                });
+<span class="nc" id="L244">                        queue.add(imageRequest);</span>
+                    }
+<span class="nc" id="L246">                    adapter.notifyDataSetChanged();</span>
+<span class="nc" id="L247">                } catch (JSONException e) {</span>
+<span class="nc" id="L248">                    Toast.makeText(getApplicationContext(), &quot;Failed to get team!&quot;, Toast.LENGTH_SHORT).show();</span>
+<span class="nc" id="L249">                }</span>
+<span class="nc" id="L250">            }</span>
+<span class="nc" id="L251">        }, new Response.ErrorListener() {</span>
+            @Override
+            public void onErrorResponse(VolleyError volleyError) {
+<span class="nc" id="L254">                Toast.makeText(getApplicationContext(), &quot;Network error&quot;, Toast.LENGTH_SHORT).show();</span>
+<span class="nc" id="L255">                volleyError.printStackTrace();</span>
+<span class="nc" id="L256">            }</span>
+        });
+<span class="nc" id="L258">        queue.add(request2);</span>
+<span class="nc" id="L259">    }</span>
+    private static Bitmap getBitmapFromDrawable(Context context, int drawableId) {
+<span class="nc" id="L261">        return BitmapFactory.decodeResource(context.getResources(), drawableId);</span>
+    }
+
+    class MyAdapter extends ArrayAdapter&lt;String&gt; {
+
+        Context context;
+        ArrayList&lt;String&gt; rTitle;
+        ArrayList&lt;String&gt; rDescription;
+        ArrayList&lt;Bitmap&gt; rImgs;
+
+<span class="nc" id="L271">        MyAdapter(Context c, ArrayList&lt;String&gt; title, ArrayList&lt;String&gt; description, ArrayList&lt;Bitmap&gt; imgs) {</span>
+<span class="nc" id="L272">            super(c, R.layout.row, R.id.usernameGroup, title);</span>
+<span class="nc" id="L273">            this.context = c;</span>
+<span class="nc" id="L274">            this.rTitle = title;</span>
+<span class="nc" id="L275">            this.rDescription = description;</span>
+<span class="nc" id="L276">            this.rImgs = imgs;</span>
+
+<span class="nc" id="L278">        }</span>
+
+        @NonNull
+        @Override
+        public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
+<span class="nc" id="L283">            LayoutInflater layoutInflater = (LayoutInflater) getApplicationContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);</span>
+<span class="nc" id="L284">            View row = layoutInflater.inflate(R.layout.row, parent, false);</span>
+<span class="nc" id="L285">            ImageView images = row.findViewById(R.id.groupPFPImage);</span>
+<span class="nc" id="L286">            TextView myTitle = row.findViewById(R.id.usernameGroup);</span>
+<span class="nc" id="L287">            TextView myDescription = row.findViewById(R.id.overallGroup);</span>
+
+            // now set our resources on views
+<span class="nc bnc" id="L290" title="All 4 branches missed.">            if(rImgs.size()-1&gt;=position&amp;&amp;rImgs.size()!=0) {</span>
+<span class="nc" id="L291">                images.setImageBitmap(rImgs.get(position));</span>
+            }
+<span class="nc bnc" id="L293" title="All 4 branches missed.">            if(rTitle.size()-1&gt;=position&amp;&amp;rTitle.size()!=0) {</span>
+<span class="nc" id="L294">                myTitle.setText(rTitle.get(position));</span>
+            }
+<span class="nc bnc" id="L296" title="All 4 branches missed.">            if(rDescription.size()-1&gt;=position&amp;&amp;rDescription.size()!=0) {</span>
+<span class="nc" id="L297">                myDescription.setText(rDescription.get(position)+&quot;% correct overall&quot;);</span>
+            }
+<span class="nc" id="L299">            return row;</span>
+        }
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span>Generated by the Android Gradle plugin 7.4.2</div></body></html>

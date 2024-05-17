@@ -1,0 +1,244 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=windows-1252"> 
+  <title>Coverage Report > StudySession</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.QuizBowl.Session</a>
+</div>
+
+<h1>Coverage Summary for Class: StudySession (com.QuizBowl.Session)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">StudySession</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/12)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/22)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package com.QuizBowl.Session;
+&nbsp;
+&nbsp;import com.QuizBowl.questions.Category;
+&nbsp;import com.QuizBowl.users.Client;
+&nbsp;import jakarta.websocket.Session;
+&nbsp;import org.json.JSONArray;
+&nbsp;import org.json.JSONObject;
+&nbsp;
+&nbsp;import java.io.IOException;
+&nbsp;
+&nbsp;/**
+&nbsp; * Handles the interface for persistent back and forth messaging between clients and the database.
+&nbsp; * Each StudySession has 4 phases: Starting, Running, Ended and Closed.
+&nbsp; */
+&nbsp;public abstract class StudySession {
+<b class="nc">&nbsp;    public static final JSONObject onEndSessionMessage = new JSONObject(&quot;{\&quot;type\&quot;:\&quot;sessionended\&quot;}&quot;);</b>
+<b class="nc">&nbsp;    public static final JSONObject onCloseSessionMessage = new JSONObject(&quot;{\&quot;type\&quot;:\&quot;sessionclosed\&quot;}&quot;);</b>
+<b class="nc">&nbsp;    public static final JSONObject onStartStudySessionMessage = new JSONObject(&quot;{\&quot;type\&quot;:\&quot;start\&quot;}&quot;);</b>
+&nbsp;    private StudySessionState sessionState;
+&nbsp;    private long sessionPoints;
+&nbsp;    private StudySessionType studySessionType;
+&nbsp;
+<b class="nc">&nbsp;    public StudySession(StudySessionType studySessionType) {</b>
+<b class="nc">&nbsp;        sessionState = StudySessionState.Starting;</b>
+<b class="nc">&nbsp;        sessionPoints = 0;</b>
+<b class="nc">&nbsp;        this.studySessionType = studySessionType;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Begins the study session.
+&nbsp;     */
+&nbsp;    public void startStudySession() {
+<b class="nc">&nbsp;        sessionState = StudySessionState.Running;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Ends the practice session.
+&nbsp;     * Note that the connections are still open until the study session is closed.
+&nbsp;     */
+&nbsp;    public void endPracticeSession() {
+<b class="nc">&nbsp;        sessionState = StudySessionState.Ended;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * @return returns true if the client is allowed to join the session, false otherwise
+&nbsp;     */
+&nbsp;    public boolean isJoinable(Client client) {
+<b class="nc">&nbsp;        return sessionState == StudySessionState.Starting;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Adds a member to this session
+&nbsp;     * @return true if the member was added, false and closes the session otherwise
+&nbsp;     */
+&nbsp;    public abstract boolean addMember(Client client, Session session, Category category);
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Sends a message to the Client
+&nbsp;     */
+&nbsp;    public abstract void sendMessage(Client client, JSONArray message);
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Sends a message to all clients
+&nbsp;     */
+&nbsp;
+&nbsp;    public abstract void sendMessageToAll(JSONArray message);
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Handles receiving a message from a specific client.
+&nbsp;     */
+&nbsp;    public abstract void onMessage(Client client, String message);
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Handles recieving a message from a specific client.
+&nbsp;     * Uses Session to find which client sent the message.
+&nbsp;     */
+&nbsp;    public void onMessage(Session session, String message) {
+<b class="nc">&nbsp;        onMessage(getClientFromSession(session), message);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Closes the session of the client given.
+&nbsp;     * In the case that this was the last client, closes the entire session.
+&nbsp;     */
+&nbsp;    public void onClose(Session session) {
+&nbsp;        try {
+<b class="nc">&nbsp;            session.close();</b>
+<b class="nc">&nbsp;        } catch (IOException e) {</b>
+<b class="nc">&nbsp;            throw new RuntimeException(e);</b>
+<b class="nc">&nbsp;        }</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Closes all client sessions and removes the session from StudySessionController.
+&nbsp;     * No more messages may be sent after the session is closed.
+&nbsp;     */
+&nbsp;    public void closeSession() {
+<b class="nc">&nbsp;        sessionState = StudySessionState.closed;</b>
+<b class="nc">&nbsp;        StudySessionController.getInstance().closeSession(this);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Adds points to the StudySession but only if the session has started and hasn&#39;t ended.
+&nbsp;     * The points are not associated with any client.
+&nbsp;     * @param points the amount of points to add
+&nbsp;     */
+&nbsp;    public void addPoints(long points) {
+<b class="nc">&nbsp;        if (sessionState == StudySessionState.Running)</b>
+<b class="nc">&nbsp;            sessionPoints += points;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * @return the total amount of points gotten by all clients in the session
+&nbsp;     */
+&nbsp;    public long getTotalSessionPoints() {
+<b class="nc">&nbsp;        return sessionPoints;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * @return the type of the study session.
+&nbsp;     */
+&nbsp;    public StudySessionType getStudySessionType() {
+<b class="nc">&nbsp;        return studySessionType;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     *
+&nbsp;     * @return the current session state. See StudySessionState.java.
+&nbsp;     */
+&nbsp;    public StudySessionState getSessionState() {
+<b class="nc">&nbsp;        return sessionState;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * @param session the session of the client to get
+&nbsp;     * @return the client associated with the given session.
+&nbsp;     */
+&nbsp;    public abstract Client getClientFromSession(Session session);
+&nbsp;}
+&nbsp;
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2024-04-26 22:45</div>
+</div>
+</body>
+</html>

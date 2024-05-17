@@ -1,0 +1,220 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=windows-1252"> 
+  <title>Coverage Report > TeamController</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.QuizBowl.users</a>
+</div>
+
+<h1>Coverage Summary for Class: TeamController (com.QuizBowl.users)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">TeamController</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    81.8%
+  </span>
+  <span class="absValue">
+    (9/11)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    73.9%
+  </span>
+  <span class="absValue">
+    (34/46)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package com.QuizBowl.users;
+&nbsp;
+&nbsp;import com.QuizBowl.questions.Category;
+&nbsp;import com.QuizBowl.questions.Question;
+&nbsp;import org.springframework.beans.factory.annotation.Autowired;
+&nbsp;import org.springframework.web.bind.annotation.*;
+&nbsp;import org.springframework.web.server.ServerWebInputException;
+&nbsp;
+&nbsp;import java.util.List;
+&nbsp;import java.util.Set;
+&nbsp;
+&nbsp;@RestController
+<b class="fc">&nbsp;public class TeamController {</b>
+&nbsp;    @Autowired
+&nbsp;    TeamRepository teamRepository;
+&nbsp;
+&nbsp;    @Autowired
+&nbsp;    UserRepository userRepository;
+&nbsp;
+&nbsp;    @Autowired
+&nbsp;    ClientController clientController;
+&nbsp;
+&nbsp;    //region getMappings
+&nbsp;    @GetMapping(&quot;teams/getbyid/{tid}&quot;)
+&nbsp;    public Team getTeamById(@PathVariable long tid) {
+<b class="fc">&nbsp;        return teamRepository.findById(tid).orElse(null);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @GetMapping(&quot;teams/getall&quot;)
+&nbsp;    public List&lt;Team&gt; getAllTeams() {
+<b class="fc">&nbsp;        return teamRepository.findAll();</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    //endregion
+&nbsp;
+&nbsp;    //region postMappings
+&nbsp;    @PostMapping(&quot;teams/post/{name}&quot;)
+&nbsp;    public Team postTeam(@PathVariable String name) {
+<b class="fc">&nbsp;        Team newTeam = new Team(name, null);</b>
+<b class="fc">&nbsp;        teamRepository.save(newTeam);</b>
+<b class="fc">&nbsp;        return newTeam;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @PostMapping(&quot;teams/createNewTeam/{name}&quot;)
+&nbsp;    public Team createTeamWithCoach(@PathVariable String name, @RequestParam String coachName, @RequestParam String coachPassword) {
+<b class="fc">&nbsp;        Client coach = clientController.getUserByLogin(coachName, coachPassword);</b>
+<b class="fc">&nbsp;        if (coach == null) throw new ServerWebInputException(&quot;You did not give a valid user as the coach&quot;);</b>
+<b class="fc">&nbsp;        Team newTeam = new Team(name, coach);</b>
+<b class="fc">&nbsp;        teamRepository.save(newTeam);</b>
+<b class="fc">&nbsp;        coach.addTeam(newTeam);</b>
+<b class="fc">&nbsp;        userRepository.save(coach);</b>
+<b class="fc">&nbsp;        return newTeam;</b>
+&nbsp;    }
+&nbsp;    //endregion
+&nbsp;
+&nbsp;    //region putMappings
+&nbsp;    @PutMapping(&quot;teams/getbyid/{tid}/adduser/{uid}&quot;)
+&nbsp;    public Team addUserToTeam(@PathVariable long tid, @PathVariable long uid) {
+<b class="fc">&nbsp;        Team team = teamRepository.findById(tid).orElseThrow();</b>
+<b class="fc">&nbsp;        Client client = userRepository.findById(uid).orElseThrow();</b>
+<b class="fc">&nbsp;        if (team.getMembers().contains(client))</b>
+<b class="nc">&nbsp;            throw new ServerWebInputException(&quot;The user was already a part of the team!&quot;);</b>
+<b class="fc">&nbsp;        team.addMember(client);</b>
+<b class="fc">&nbsp;        client.addTeam(team);</b>
+<b class="fc">&nbsp;        teamRepository.save(team);</b>
+<b class="fc">&nbsp;        userRepository.save(client);</b>
+<b class="fc">&nbsp;        return team;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @PutMapping(&quot;teams/getbyid/{tid}/removeuser/{uid}&quot;)
+&nbsp;    public Team removeUserfromTeam(@PathVariable long tid, @PathVariable long uid) {
+<b class="nc">&nbsp;        Team team = teamRepository.findById(tid).orElseThrow();</b>
+<b class="nc">&nbsp;        Client client = userRepository.findById(uid).orElseThrow();</b>
+<b class="nc">&nbsp;        if (!team.getMembers().contains(client))</b>
+<b class="nc">&nbsp;            throw new ServerWebInputException(&quot;The user was not a part of the team!&quot;);</b>
+<b class="nc">&nbsp;        team.removeMember(client);</b>
+<b class="nc">&nbsp;        client.removeTeam(team);</b>
+<b class="nc">&nbsp;        userRepository.save(client);</b>
+<b class="nc">&nbsp;        teamRepository.save(team);</b>
+<b class="nc">&nbsp;        return team;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @GetMapping(&quot;/teams/getusers/{id}&quot;)
+&nbsp;    public Set&lt;Client&gt; getUsersInTeam(@PathVariable long id){
+<b class="nc">&nbsp;        Team t = teamRepository.findById(id).orElseThrow();</b>
+<b class="nc">&nbsp;        return t.getMembers();</b>
+&nbsp;    }
+&nbsp;    @PutMapping(&quot;teams/getbyid/{tid}/addpoints/{points}&quot;)
+&nbsp;    public void addPointsToTeam(@PathVariable long tid, @PathVariable long points) {
+<b class="fc">&nbsp;        Team team = teamRepository.findById(tid).orElseThrow();</b>
+<b class="fc">&nbsp;        team.addTeamPoints(points);</b>
+<b class="fc">&nbsp;        teamRepository.save(team);</b>
+&nbsp;    }
+&nbsp;    //endregion
+&nbsp;
+&nbsp;    //region deleteMappings
+&nbsp;    @DeleteMapping(&quot;teams/deletebyid/{id}&quot;)
+&nbsp;    public Team deleteTeamById(@PathVariable long id) {
+<b class="fc">&nbsp;        Team teams = teamRepository.findById(id).orElseThrow();</b>
+<b class="fc">&nbsp;        teams.onDelete();</b>
+<b class="fc">&nbsp;        teamRepository.deleteById(id);</b>
+<b class="fc">&nbsp;        return teams;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @DeleteMapping(&quot;teams/deleteall&quot;)
+&nbsp;    public List&lt;Team&gt; deleteAllTeams() {
+<b class="fc">&nbsp;        List&lt;Team&gt; teams = teamRepository.findAll();</b>
+<b class="fc">&nbsp;        for (var team : teams) {</b>
+<b class="fc">&nbsp;            team.onDelete();</b>
+<b class="fc">&nbsp;        }</b>
+<b class="fc">&nbsp;        teamRepository.deleteAll();</b>
+<b class="fc">&nbsp;        return teams;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    //endregion
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2024-04-26 22:45</div>
+</div>
+</body>
+</html>

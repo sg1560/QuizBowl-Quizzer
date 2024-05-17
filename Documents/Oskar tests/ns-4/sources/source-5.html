@@ -1,0 +1,194 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=windows-1252"> 
+  <title>Coverage Report > StudySessionServer</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.QuizBowl.Session</a>
+</div>
+
+<h1>Coverage Summary for Class: StudySessionServer (com.QuizBowl.Session)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">StudySessionServer</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    42.9%
+  </span>
+  <span class="absValue">
+    (3/7)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    22.6%
+  </span>
+  <span class="absValue">
+    (7/31)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package com.QuizBowl.Session;
+&nbsp;
+&nbsp;import com.QuizBowl.questions.Category;
+&nbsp;import com.QuizBowl.questions.CategoryController;
+&nbsp;import com.QuizBowl.questions.QuestionController;
+&nbsp;import com.QuizBowl.users.*;
+&nbsp;import jakarta.websocket.*;
+&nbsp;import jakarta.websocket.server.PathParam;
+&nbsp;import jakarta.websocket.server.ServerEndpoint;
+&nbsp;import org.springframework.beans.factory.annotation.Autowired;
+&nbsp;import org.springframework.stereotype.Component;
+&nbsp;
+&nbsp;import java.io.IOException;
+&nbsp;import java.util.*;
+&nbsp;
+&nbsp;
+&nbsp;@ServerEndpoint(&quot;/session/{studysessiontype}/{cid}/team/{tid}/size/{size}/category/{catid}&quot;)
+&nbsp;@Component
+<b class="fc">&nbsp;public class StudySessionServer {</b>
+&nbsp;    static QuestionController questionController;
+&nbsp;
+&nbsp;    static ClientController clientController;
+&nbsp;    static TeamController teamController;
+&nbsp;    static CategoryController categoryController;
+&nbsp;    static ClientQuestionController clientQuestionController;
+&nbsp;    /**
+&nbsp;     * Keeps track of which session is associated with which Study Session
+&nbsp;     */
+<b class="fc">&nbsp;    private static final Hashtable&lt;Session, StudySession&gt; clientSessionMap = new Hashtable&lt;&gt;();</b>
+&nbsp;
+&nbsp;    @OnOpen
+&nbsp;    public void onOpen(Session session, @PathParam(value = &quot;studysessiontype&quot;) String studySessionType, @PathParam(value=&quot;cid&quot;) long cid, @PathParam(value=&quot;tid&quot;) long tid, @PathParam(value=&quot;size&quot;) int size, @PathParam(value=&quot;catid&quot;) long catid) throws IOException {
+&nbsp;        StudySessionType type;
+&nbsp;        try {
+<b class="nc">&nbsp;            type = StudySessionType.valueOf(studySessionType);</b>
+<b class="nc">&nbsp;        } catch (IllegalArgumentException e){</b>
+<b class="nc">&nbsp;            session.getBasicRemote().sendText(&quot;Error, your path parameter studysessiontype either did not exist or was spelled wrong. Will default to collaborative session.&quot;);</b>
+<b class="nc">&nbsp;            type = StudySessionType.Collaborative;</b>
+<b class="nc">&nbsp;        }</b>
+<b class="nc">&nbsp;        Client client = clientController.getUserById(cid);</b>
+<b class="nc">&nbsp;        Team team = teamController.getTeamById(tid);</b>
+<b class="nc">&nbsp;        Category category = categoryController.getCategoryById(catid);</b>
+&nbsp;
+<b class="nc">&nbsp;        if (team == null) {</b>
+<b class="nc">&nbsp;            session.getBasicRemote().sendText(&quot;There was no team associated with the team id given&quot;);</b>
+&nbsp;            return;
+&nbsp;        }
+<b class="nc">&nbsp;        if (client == null) {</b>
+<b class="nc">&nbsp;            session.getBasicRemote().sendText(&quot;There was no clint associated with the client id given&quot;);</b>
+&nbsp;            return;
+&nbsp;        }
+<b class="nc">&nbsp;        if (!team.memberInTeam(client)) {</b>
+<b class="nc">&nbsp;            session.getBasicRemote().sendText(&quot;Study Session request failed, client was not a member of the team&quot;);</b>
+&nbsp;        }
+&nbsp;
+<b class="nc">&nbsp;        Optional&lt;StudySession&gt; joinableSession = StudySessionController.getInstance().getJoinableStudySessions(client, team, type).stream().findFirst();</b>
+&nbsp;        StudySession studySession;
+<b class="nc">&nbsp;        StudySessionType finalType = type;</b>
+<b class="nc">&nbsp;        studySession = joinableSession.orElseGet(() -&gt; StudySessionController.getInstance().startNewSession(team, finalType, size, clientController, questionController, categoryController, clientQuestionController));</b>
+<b class="nc">&nbsp;        if (studySession.addMember(client, session, category)) {</b>
+<b class="nc">&nbsp;            clientSessionMap.put(session, studySession);</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    @OnClose
+&nbsp;    public void onClose(Session session) {
+<b class="nc">&nbsp;        clientSessionMap.get(session).onClose(session);</b>
+<b class="nc">&nbsp;        clientSessionMap.remove(session);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @OnMessage
+&nbsp;    public void onMessage(Session session, String message) {
+<b class="nc">&nbsp;        clientSessionMap.get(session).onMessage(session, message);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @OnError
+&nbsp;    public void onError(Session session, Throwable throwable) throws Throwable {
+<b class="nc">&nbsp;        onClose(session);</b>
+<b class="nc">&nbsp;        throw new RuntimeException(&quot;ClientError&quot;, throwable);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Autowired
+&nbsp;    public void setControllers(QuestionController questionController, ClientController clientController, TeamController teamController, CategoryController categoryController, ClientQuestionController clientQuestionController) {
+<b class="fc">&nbsp;        StudySessionServer.questionController = questionController;</b>
+<b class="fc">&nbsp;        StudySessionServer.clientController = clientController;</b>
+<b class="fc">&nbsp;        StudySessionServer.teamController = teamController;</b>
+<b class="fc">&nbsp;        StudySessionServer.categoryController = categoryController;</b>
+<b class="fc">&nbsp;        StudySessionServer.clientQuestionController = clientQuestionController;</b>
+&nbsp;    }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2024-04-26 22:45</div>
+</div>
+</body>
+</html>

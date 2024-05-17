@@ -1,0 +1,203 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=windows-1252"> 
+  <title>Coverage Report > StudySessionController</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.QuizBowl.Session</a>
+</div>
+
+<h1>Coverage Summary for Class: StudySessionController (com.QuizBowl.Session)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">StudySessionController</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/5)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/20)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">StudySessionController$1</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+  </tr>
+<tr>
+  <td class="name"><strong>Total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/6)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/21)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package com.QuizBowl.Session;
+&nbsp;
+&nbsp;import com.QuizBowl.questions.CategoryController;
+&nbsp;import com.QuizBowl.questions.QuestionController;
+&nbsp;import com.QuizBowl.users.Client;
+&nbsp;import com.QuizBowl.users.ClientController;
+&nbsp;import com.QuizBowl.users.ClientQuestionController;
+&nbsp;import com.QuizBowl.users.Team;
+&nbsp;
+&nbsp;import java.lang.reflect.Type;
+&nbsp;import java.util.ArrayList;
+&nbsp;import java.util.HashSet;
+&nbsp;import java.util.Hashtable;
+&nbsp;import java.util.List;
+&nbsp;
+&nbsp;/**
+&nbsp; * StudySessionController is a singleton class that keeps track of all StudySessions currently in progress.
+&nbsp; * It manages searching for joinable study sessions.
+&nbsp; * Once a session is closed it can no longer be found in StudySessionController.
+&nbsp; */
+&nbsp;public class StudySessionController {
+&nbsp;    private static StudySessionController studySessionController;
+&nbsp;    private final Hashtable&lt;Team, HashSet&lt;StudySession&gt;&gt; activeStudySession;
+&nbsp;    private final Hashtable&lt;StudySession, Team&gt; studySessionTeams;
+&nbsp;
+<b class="nc">&nbsp;    private StudySessionController() {</b>
+<b class="nc">&nbsp;        activeStudySession = new Hashtable&lt;&gt;();</b>
+<b class="nc">&nbsp;        studySessionTeams = new Hashtable&lt;&gt;();</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public static StudySessionController getInstance() {
+<b class="nc">&nbsp;        if (studySessionController == null) {</b>
+<b class="nc">&nbsp;            studySessionController = new StudySessionController();</b>
+&nbsp;        }
+<b class="nc">&nbsp;        return studySessionController;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Stores a new StudySession, so it can be accessed and joined.
+&nbsp;     */
+&nbsp;    public StudySession startNewSession(Team team, StudySessionType type, int numberOfQuestions, ClientController clientController, QuestionController questionController, CategoryController categoryController, ClientQuestionController clientQuestionController) {
+&nbsp;        StudySession studySession;
+<b class="nc">&nbsp;        switch (type) {</b>
+<b class="nc">&nbsp;            case Competitive -&gt; studySession = new CompetitiveStudySession(type, clientController, questionController, categoryController, clientQuestionController, numberOfQuestions);</b>
+<b class="nc">&nbsp;            default -&gt; studySession = new CollaborativeStudySession(type, clientController, questionController, categoryController, clientQuestionController, numberOfQuestions);</b>
+&nbsp;        }
+<b class="nc">&nbsp;        if (!activeStudySession.containsKey(team)) {</b>
+<b class="nc">&nbsp;            activeStudySession.put(team, new HashSet&lt;StudySession&gt;());</b>
+&nbsp;        }
+<b class="nc">&nbsp;        activeStudySession.get(team).add(studySession);</b>
+<b class="nc">&nbsp;        studySessionTeams.put(studySession, team);</b>
+<b class="nc">&nbsp;        return studySession;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Handles closing a study session
+&nbsp;     */
+&nbsp;    public void closeSession(StudySession studySession) {
+<b class="nc">&nbsp;        Team team = studySessionTeams.remove(studySession);</b>
+<b class="nc">&nbsp;        activeStudySession.get(team).remove(studySession);</b>
+<b class="nc">&nbsp;        if (activeStudySession.get(team).isEmpty()) {</b>
+<b class="nc">&nbsp;            activeStudySession.remove(team);</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * @return a list of joinable sessions being hosted by the team.
+&nbsp;     */
+&nbsp;    public List&lt;StudySession&gt; getJoinableStudySessions(Client client, Team team, StudySessionType type) {
+<b class="nc">&nbsp;        if (!activeStudySession.containsKey(team)) return new ArrayList&lt;&gt;();</b>
+<b class="nc">&nbsp;        return activeStudySession.get(team).stream().filter((s) -&gt; s.isJoinable(client) &amp;&amp; s.getStudySessionType() == type).toList();</b>
+&nbsp;    }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2024-04-26 22:45</div>
+</div>
+</body>
+</html>

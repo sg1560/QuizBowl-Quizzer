@@ -1,0 +1,191 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=windows-1252"> 
+  <title>Coverage Report > AdminController</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.QuizBowl.admin</a>
+</div>
+
+<h1>Coverage Summary for Class: AdminController (com.QuizBowl.admin)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">AdminController</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    8.3%
+  </span>
+  <span class="absValue">
+    (1/12)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    6.2%
+  </span>
+  <span class="absValue">
+    (1/16)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package com.QuizBowl.admin;
+&nbsp;
+&nbsp;import com.QuizBowl.questions.*;
+&nbsp;import com.QuizBowl.users.Client;
+&nbsp;import com.QuizBowl.users.Team;
+&nbsp;import com.QuizBowl.users.TeamController;
+&nbsp;import com.QuizBowl.users.TeamRepository;
+&nbsp;import org.springframework.beans.factory.annotation.Autowired;
+&nbsp;import org.springframework.web.bind.annotation.*;
+&nbsp;import org.springframework.web.server.ServerWebInputException;
+&nbsp;
+&nbsp;import java.util.List;
+&nbsp;
+&nbsp;@RestController
+<b class="fc">&nbsp;public class AdminController {</b>
+&nbsp;    @Autowired
+&nbsp;    CategoryController categoryController;
+&nbsp;
+&nbsp;    @Autowired
+&nbsp;    TeamController teamController;
+&nbsp;
+&nbsp;    @Autowired
+&nbsp;    QuestionController questionController;
+&nbsp;
+&nbsp;    @Autowired
+&nbsp;    AdminRepository adminRepository;
+&nbsp;
+&nbsp;    //Get all the admins
+&nbsp;    @GetMapping(&quot;/admin/getAllAdmin&quot;)
+&nbsp;    public List&lt;Admin&gt; getAllAdmin(){
+<b class="nc">&nbsp;        return adminRepository.findAll();</b>
+&nbsp;    }
+&nbsp;    //Admin has access to all the teams in the database
+&nbsp;    @GetMapping(&quot;/admin/getTeams&quot;)
+&nbsp;    public List&lt;Team&gt; getAllTeams(){
+<b class="nc">&nbsp;        return teamController.getAllTeams();</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    //Admin has access to all the questions in the database
+&nbsp;    @GetMapping(&quot;/admin/getQuestions&quot;)
+<b class="nc">&nbsp;    public List&lt;Question&gt; getAllQuestions(){return questionController.getAllQuestions();}</b>
+&nbsp;
+&nbsp;    //Admin has access to all the categories in the database
+&nbsp;    @GetMapping(&quot;/admin/getCategories&quot;)
+<b class="nc">&nbsp;    public List&lt;Category&gt; getAllCategories(){return categoryController.getAllCategories();}</b>
+&nbsp;
+&nbsp;    @PostMapping(&quot;/admin/createAdmin&quot;)
+&nbsp;    public Admin createAdmin(@RequestBody Admin admin){
+<b class="nc">&nbsp;        adminRepository.save(admin);</b>
+<b class="nc">&nbsp;        return admin;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @PutMapping(&quot;admin/updateUsername/{username}/{id}&quot;)
+&nbsp;    public String updateUsername(@PathVariable String username, @PathVariable Long id){
+<b class="nc">&nbsp;        Admin admin = adminRepository.findById(id).orElseThrow();</b>
+<b class="nc">&nbsp;        admin.setName(username);</b>
+<b class="nc">&nbsp;        adminRepository.save(admin);</b>
+<b class="nc">&nbsp;        return &quot;Username reset to: &quot; + admin.getName();</b>
+&nbsp;    }
+&nbsp;    //Admin can create team
+&nbsp;    @PostMapping(&quot;/admin/createTeam/{name}/{coachName}/{coachPassword}&quot;)
+&nbsp;    public Team createTeam(@PathVariable String name, @PathVariable String coachName, @PathVariable String coachPassword){
+<b class="nc">&nbsp;        return teamController.createTeamWithCoach(name, coachName, coachPassword);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    //Admin can create question
+&nbsp;    @PostMapping(&quot;/admin/createQuestion/{cid}&quot;)
+&nbsp;    public String createQuestion(@RequestBody Question newQ, @PathVariable Long cid){
+<b class="nc">&nbsp;        return questionController.createQuestion(newQ, cid);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @DeleteMapping(&quot;/admin/deleteAdmin/{id}&quot;)
+&nbsp;    public void deleteAdmin(@PathVariable long id){
+<b class="nc">&nbsp;        adminRepository.deleteById(id);</b>
+&nbsp;    }
+&nbsp;    //Admin can remove a team
+&nbsp;    @DeleteMapping(&quot;/admin/deleteTeam/{id}&quot;)
+&nbsp;    public Team deleteTeam(@PathVariable long id){
+<b class="nc">&nbsp;        return teamController.deleteTeamById(id);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    //Admin can remove a question
+&nbsp;    @DeleteMapping(&quot;/admin/deleteQuestion/{id}&quot;)
+&nbsp;    public Question deleteQuestion(@PathVariable Long id){
+<b class="nc">&nbsp;        return questionController.deleteQuestion(id);</b>
+&nbsp;    }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2024-04-26 22:45</div>
+</div>
+</body>
+</html>

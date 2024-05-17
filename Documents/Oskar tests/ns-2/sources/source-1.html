@@ -1,0 +1,186 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=windows-1252"> 
+  <title>Coverage Report > Chat</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.QuizBowl.Chat</a>
+</div>
+
+<h1>Coverage Summary for Class: Chat (com.QuizBowl.Chat)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">Chat</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/5)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/36)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package com.QuizBowl.Chat;
+&nbsp;
+&nbsp;import com.QuizBowl.users.*;
+&nbsp;import com.fasterxml.jackson.databind.util.JSONPObject;
+&nbsp;import com.mysql.cj.xdevapi.JsonArray;
+&nbsp;import jakarta.websocket.Session;
+&nbsp;import org.antlr.v4.runtime.misc.Pair;
+&nbsp;import org.apache.catalina.filters.RemoteIpFilter;
+&nbsp;import org.apache.tomcat.Jar;
+&nbsp;import org.h2.util.json.JSONArray;
+&nbsp;import org.h2.util.json.JSONObject;
+&nbsp;
+&nbsp;import java.io.IOException;
+&nbsp;import java.io.PipedInputStream;
+&nbsp;import java.lang.reflect.Array;
+&nbsp;import java.util.ArrayList;
+&nbsp;import java.util.Hashtable;
+&nbsp;import java.util.List;
+&nbsp;import java.util.Map;
+&nbsp;
+&nbsp;public class Chat {
+&nbsp;    ClientController clientController;
+&nbsp;    TeamController teamController;
+&nbsp;
+&nbsp;    UserRepository clientRepository;
+&nbsp;
+&nbsp;    private Team team;
+<b class="nc">&nbsp;    List&lt;Pair&lt;Client, String&gt;&gt; messageLog = new ArrayList&lt;&gt;();</b>
+&nbsp;
+<b class="nc">&nbsp;    private Map&lt;Session, Client&gt; sessionClientMap = new Hashtable&lt;&gt;();</b>
+<b class="nc">&nbsp;    private Map&lt;Client, Session&gt; clientSessionMap = new Hashtable&lt;&gt;();</b>
+&nbsp;
+<b class="nc">&nbsp;    public Chat(ClientController clientController, TeamController teamController, Team team) {</b>
+<b class="nc">&nbsp;        this.clientController = clientController;</b>
+<b class="nc">&nbsp;        this.teamController = teamController;</b>
+<b class="nc">&nbsp;        this.team = team;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public void onMessage(Session session, String message) throws IOException {
+<b class="nc">&nbsp;        Client client = sessionClientMap.get(session);</b>
+<b class="nc">&nbsp;        messageLog.add(new Pair&lt;&gt;(client, message));</b>
+<b class="nc">&nbsp;        updateClients(client, message);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public void updateClients(Client client, String message) throws IOException {
+<b class="nc">&nbsp;        for (Session session : sessionClientMap.keySet()) {</b>
+&nbsp;
+<b class="nc">&nbsp;            session.getBasicRemote().sendText(&quot;[{\&quot;type\&quot;:\&quot;newmessage\&quot;, \&quot;client\&quot;:&quot; + client.getCid() + &quot;, \&quot;text\&quot;:\&quot;&quot; + message + &quot;\&quot;}]&quot;);</b>
+<b class="nc">&nbsp;        }</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public void addUser(Session session, Client client) throws IOException {
+<b class="nc">&nbsp;        sessionClientMap.put(session, client);</b>
+<b class="nc">&nbsp;        clientSessionMap.put(client, session);</b>
+<b class="nc">&nbsp;        String catchupMessage = &quot;[&quot;;</b>
+<b class="nc">&nbsp;        ArrayList&lt;String&gt; messages = new ArrayList&lt;&gt;();</b>
+<b class="nc">&nbsp;        for (var chatMember : clientSessionMap.keySet()) {</b>
+<b class="nc">&nbsp;            messages.add(chatMember.toJSON());</b>
+<b class="nc">&nbsp;        }</b>
+<b class="nc">&nbsp;        messages.add(&quot;{\&quot;type\&quot;:\&quot;newmessage\&quot;, \&quot;client\&quot;:&quot; + client.getCid() + &quot;, \&quot;text\&quot;:\&quot;This is the start of the group chat.\&quot;}&quot;);</b>
+<b class="nc">&nbsp;        for (var message : messageLog) {</b>
+<b class="nc">&nbsp;            messages.add(&quot;{\&quot;type\&quot;:\&quot;newmessage\&quot;, \&quot;client\&quot;:&quot; + message.a.getCid() + &quot;, \&quot;text\&quot;:\&quot;&quot; + message.b + &quot;\&quot;}&quot;);</b>
+<b class="nc">&nbsp;        }</b>
+<b class="nc">&nbsp;        catchupMessage += String.join(&quot;,&quot;, messages);</b>
+<b class="nc">&nbsp;        catchupMessage += &quot;]&quot;;</b>
+<b class="nc">&nbsp;        session.getBasicRemote().sendText(catchupMessage);</b>
+<b class="nc">&nbsp;        for (var chatMember : clientSessionMap.keySet()) {</b>
+<b class="nc">&nbsp;            if (chatMember == client) continue;</b>
+<b class="nc">&nbsp;            clientSessionMap.get(chatMember).getBasicRemote().sendText(&quot;[&quot; + client.toJSON() + &quot;]&quot;);</b>
+<b class="nc">&nbsp;        }</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public void onClose(Session session) {
+<b class="nc">&nbsp;        Client client = sessionClientMap.get(session);</b>
+<b class="nc">&nbsp;        sessionClientMap.remove(session);</b>
+<b class="nc">&nbsp;        clientSessionMap.remove(client);</b>
+&nbsp;
+<b class="nc">&nbsp;        if(sessionClientMap.isEmpty()){</b>
+<b class="nc">&nbsp;            ChatServer.onChatEnd(this, team);</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2024-04-26 22:45</div>
+</div>
+</body>
+</html>

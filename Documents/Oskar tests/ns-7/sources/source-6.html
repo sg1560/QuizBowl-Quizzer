@@ -1,0 +1,245 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=windows-1252"> 
+  <title>Coverage Report > Team</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.QuizBowl.users</a>
+</div>
+
+<h1>Coverage Summary for Class: Team (com.QuizBowl.users)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">Team</td>
+<td class="coverageStat">
+  <span class="percent">
+    94.7%
+  </span>
+  <span class="absValue">
+    (18/19)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    90.9%
+  </span>
+  <span class="absValue">
+    (30/33)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">Team$HibernateInstantiator$vh7pEwwS</td>
+  </tr>
+  <tr>
+    <td class="name">Team$HibernateInstantiator$XI3AIBGu</td>
+  </tr>
+  <tr>
+    <td class="name">Team$HibernateProxy$KMmAP4Uj</td>
+  </tr>
+  <tr>
+    <td class="name">Team$HibernateProxy$nvwsWKIn</td>
+  </tr>
+<tr>
+  <td class="name"><strong>Total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    94.7%
+  </span>
+  <span class="absValue">
+    (18/19)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    90.9%
+  </span>
+  <span class="absValue">
+    (30/33)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package com.QuizBowl.users;
+&nbsp;
+&nbsp;import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+&nbsp;import com.fasterxml.jackson.core.JsonProcessingException;
+&nbsp;import com.fasterxml.jackson.databind.ObjectMapper;
+&nbsp;import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+&nbsp;import jakarta.persistence.*;
+&nbsp;
+&nbsp;import java.util.HashSet;
+&nbsp;import java.util.Objects;
+&nbsp;import java.util.Set;
+&nbsp;
+&nbsp;@Entity
+&nbsp;public class Team {
+&nbsp;    @Id
+&nbsp;    @GeneratedValue(strategy = GenerationType.IDENTITY)
+&nbsp;    private long tid;
+&nbsp;
+&nbsp;    private String name;
+&nbsp;
+&nbsp;    @ManyToOne(fetch = FetchType.EAGER)
+&nbsp;    @JoinColumn(name=&quot;client_cid&quot;)
+&nbsp;    @JsonIgnoreProperties(&quot;teams&quot;)
+&nbsp;    private Client coach;
+&nbsp;
+&nbsp;    @ManyToMany(fetch = FetchType.EAGER)
+&nbsp;    @JsonIgnoreProperties(&quot;teams&quot;)
+&nbsp;    private Set&lt;Client&gt; members;
+&nbsp;
+&nbsp;    private long teamPoints;
+&nbsp;
+<b class="fc">&nbsp;    public Team() {</b>
+&nbsp;
+&nbsp;    }
+&nbsp;
+<b class="fc">&nbsp;    public Team(String name, Client coach) {</b>
+<b class="fc">&nbsp;        this.name = name;</b>
+<b class="fc">&nbsp;        members = new HashSet&lt;&gt;();</b>
+<b class="fc">&nbsp;        this.coach = coach;</b>
+<b class="fc">&nbsp;        members.add(coach);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public void onDelete() {
+<b class="fc">&nbsp;        for (var member : members) {</b>
+<b class="fc">&nbsp;            member.removeTeam(this);</b>
+<b class="fc">&nbsp;        }</b>
+<b class="fc">&nbsp;        members.clear();</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public void setTid(long gid) {
+<b class="fc">&nbsp;        this.tid = gid;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public long getTid() {
+<b class="fc">&nbsp;        return tid;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public Set&lt;Client&gt; getMembers() {
+<b class="fc">&nbsp;        return members;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public void setMembers(Set&lt;Client&gt; members) {
+<b class="fc">&nbsp;        this.members = members;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public void addMember(Client member) {
+<b class="fc">&nbsp;        members.add(member);</b>
+&nbsp;    }
+&nbsp;    public void removeMember(Client member) {
+<b class="nc">&nbsp;        members.remove(member);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public boolean memberInTeam(Client member){
+<b class="fc">&nbsp;        for(Client c: getMembers()){</b>
+<b class="fc">&nbsp;            if(c.getCid() == member.getCid()){</b>
+<b class="fc">&nbsp;                return true;</b>
+&nbsp;            }
+<b class="nc">&nbsp;        }</b>
+<b class="nc">&nbsp;        return false;</b>
+&nbsp;    }
+&nbsp;    public String getName() {
+<b class="fc">&nbsp;        return name;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public void setName(String name) {
+<b class="fc">&nbsp;        this.name = name;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public Client getCoach() {
+<b class="fc">&nbsp;        return coach;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public void setCoach(Client coach) {
+<b class="fc">&nbsp;        this.coach = coach;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public long getTeamPoints() {
+<b class="fc">&nbsp;        return teamPoints;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public void addTeamPoints(long teamPoints) {
+<b class="fc">&nbsp;        this.teamPoints += teamPoints;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public static Team getTeamFromJSON(String teamAsString) throws JsonProcessingException {
+<b class="fc">&nbsp;        ObjectMapper objectMapper = new ObjectMapper();</b>
+<b class="fc">&nbsp;        objectMapper.registerModule(new JavaTimeModule());</b>
+<b class="fc">&nbsp;        return objectMapper.readValue(teamAsString, Team.class);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public boolean equals(Object o) {
+<b class="fc">&nbsp;        if (!(o instanceof Team)) return false;</b>
+<b class="fc">&nbsp;        return tid == ((Team)o).tid;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public int hashCode() {
+<b class="fc">&nbsp;        return Objects.hash(tid);</b>
+&nbsp;    }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2024-04-26 22:45</div>
+</div>
+</body>
+</html>

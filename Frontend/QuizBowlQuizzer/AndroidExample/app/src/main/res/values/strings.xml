@@ -1,0 +1,11 @@
+<resources>
+    <string name="app_name">AndroidExample</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="i_m_a_button">I\'m a button!</string>
+    <string-array name="sessions">
+        <item>Solo</item>
+        <item>Collaborative</item>
+        <item>Competitive</item>
+    </string-array>
+</resources>

@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    tools:context=".EditQuestions.QuestionAdder"
+    android:orientation="vertical">
+
+    <!-- TODO: Update blank fragment layout -->
+    <TextView
+        android:id="@+id/questionAdderTitle"
+        style="@style/TextAppearance.AppCompat.Title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="20dp"
+        android:text="Filter Questions"
+        android:textColor="@color/text_dark_blue" />
+
+    <RadioGroup
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginHorizontal="20dp"
+        >
+        <RadioButton
+            android:id="@+id/radioAll"
+            android:layout_height="match_parent"
+            android:layout_width="match_parent"
+            android:text="All"/>
+        <RadioButton
+            android:id="@+id/radioGeography"
+            android:layout_height="match_parent"
+            android:layout_width="match_parent"
+            android:layout_marginRight="10dp"
+            android:text="Geography"/>
+        <RadioButton
+            android:id="@+id/radioFineArts"
+            android:layout_height="match_parent"
+            android:layout_width="match_parent"
+            android:text="Fine Arts"/>
+        <RadioButton
+            android:id="@+id/radioScience"
+            android:layout_width="match_parent"
+            android:layout_marginRight="10dp"
+            android:text="Science"
+            android:layout_height="wrap_content"/>
+
+        <RadioButton
+            android:id="@+id/radioHistory"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginRight="10dp"
+            android:text="History" />
+
+        <RadioButton
+            android:id="@+id/radioPopCulture"
+            android:layout_height="match_parent"
+            android:layout_width="match_parent"
+            android:text="Pop culture"/>
+    </RadioGroup>
+
+    <TextView
+        android:id="@+id/errorMessage"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="25dp"
+        android:layout_marginBottom="5dp"
+        android:text="Please fill out both fields"
+        android:textColor="#9F0B0B">
+
+    </TextView>
+    <Button
+        android:id="@+id/btnSave"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginLeft="30dp"
+        android:layout_marginRight="20dp"
+        android:backgroundTint="@color/button_blue"
+        android:text="Filter"
+        android:textColor="#FFFFFF">
+
+    </Button>
+</LinearLayout>

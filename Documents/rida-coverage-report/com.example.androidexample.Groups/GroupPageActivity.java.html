@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>GroupPageActivity.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=0;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">debug</a> &gt; <a href="index.source.html" class="el_package">com.example.androidexample.Groups</a> &gt; <span class="el_source">GroupPageActivity.java</span></div><h1>GroupPageActivity.java</h1><pre class="source lang-java linenums">package com.example.androidexample.Groups;
+
+import android.content.Intent;
+import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
+import android.widget.TextView;
+
+import androidx.appcompat.app.AppCompatActivity;
+
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.Volley;
+import com.example.androidexample.MainActivity;
+import com.example.androidexample.R;
+import com.example.androidexample.User.UserObject;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.Serializable;
+
+<span class="fc" id="L27">public class GroupPageActivity extends AppCompatActivity implements Serializable {</span>
+    private Button createGroup, joinGroup, listAll, home, deleteGroup;
+    private TextView memberList, welcome;
+    private RequestQueue queue;
+    private UserObject user;
+    private String username, password, url;
+<span class="fc" id="L33">    private long teamID = -1;</span>
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+<span class="fc" id="L37">        super.onCreate(savedInstanceState);</span>
+<span class="fc" id="L38">        setContentView(R.layout.groups_layout);</span>
+
+<span class="fc" id="L40">        createGroup = findViewById(R.id.createGroupButton);</span>
+<span class="fc" id="L41">        welcome = findViewById(R.id.welcome);</span>
+<span class="fc" id="L42">        joinGroup = findViewById(R.id.joinGroupButton);</span>
+<span class="fc" id="L43">        memberList = findViewById(R.id.memberList);</span>
+<span class="fc" id="L44">        listAll = findViewById(R.id.listAllGroupsButton);</span>
+<span class="fc" id="L45">        home = findViewById(R.id.backToHomeButton);</span>
+<span class="fc" id="L46">        deleteGroup = findViewById(R.id.deleteGroup);</span>
+<span class="fc" id="L47">        queue = Volley.newRequestQueue(this);</span>
+<span class="fc" id="L48">        user = (UserObject) getIntent().getSerializableExtra(&quot;USER&quot;);</span>
+<span class="fc" id="L49">        username = user.getUserName();</span>
+<span class="fc" id="L50">        password = user.getPassword();</span>
+
+<span class="fc" id="L52">        url = MainActivity.httpServerAddress + &quot;/users/login?username=&quot; + username + &quot;&amp;password=&quot; + password;</span>
+<span class="fc" id="L53">        JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, url, null, new Response.Listener&lt;JSONObject&gt;() {</span>
+            @Override
+            public void onResponse(JSONObject response) {
+                try {
+<span class="fc" id="L57">                    JSONArray jsonArray = response.getJSONArray(&quot;teams&quot;);</span>
+<span class="fc" id="L58">                    JSONObject teams = jsonArray.getJSONObject(0);</span>
+<span class="fc" id="L59">                    String teamName = teams.getString(&quot;name&quot;);</span>
+<span class="fc" id="L60">                    teamID = teams.getInt(&quot;tid&quot;);</span>
+<span class="fc" id="L61">                    welcome.append(&quot;Welcome back to team &quot; + teamName + &quot;!&quot;);</span>
+<span class="fc" id="L62">                    onSuccess(url);</span>
+<span class="nc" id="L63">                } catch (JSONException e) {</span>
+<span class="nc" id="L64">                    welcome.append(&quot;You are not currently in a team&quot;);</span>
+<span class="fc" id="L65">                }</span>
+
+<span class="fc" id="L67">            }</span>
+<span class="fc" id="L68">        }, new Response.ErrorListener() {</span>
+            @Override
+            public void onErrorResponse(VolleyError volleyError) {
+<span class="nc" id="L71">                memberList.append(&quot;Network error!&quot;);</span>
+<span class="nc" id="L72">            }</span>
+        });
+<span class="fc" id="L74">        queue.add(request);</span>
+
+<span class="fc" id="L76">        createGroup.setOnClickListener(new View.OnClickListener() {</span>
+            @Override
+            public void onClick(View v) {
+<span class="nc" id="L79">                Intent intent = new Intent(GroupPageActivity.this, GroupCreationActivity.class);</span>
+<span class="nc" id="L80">                intent.putExtra(&quot;USER&quot;, user);</span>
+<span class="nc" id="L81">                startActivity(intent);</span>
+<span class="nc" id="L82">            }</span>
+        });
+
+<span class="fc" id="L85">        joinGroup.setOnClickListener(new View.OnClickListener() {</span>
+            @Override
+            public void onClick(View v) {
+<span class="nc" id="L88">                Intent intent = new Intent(GroupPageActivity.this, GroupJoinActivity.class);</span>
+<span class="nc" id="L89">                intent.putExtra(&quot;USER&quot;, user);</span>
+<span class="nc" id="L90">                startActivity(intent);</span>
+<span class="nc" id="L91">            }</span>
+        });
+
+<span class="fc" id="L94">        listAll.setOnClickListener(new View.OnClickListener() {</span>
+            @Override
+            public void onClick(View view) {
+<span class="nc" id="L97">                Intent intent = new Intent(GroupPageActivity.this, ListAllGroupsActivity.class);</span>
+<span class="nc" id="L98">                intent.putExtra(&quot;USER&quot;, user);</span>
+<span class="nc" id="L99">                startActivity(intent);</span>
+<span class="nc" id="L100">            }</span>
+        });
+
+<span class="fc" id="L103">        home.setOnClickListener(new View.OnClickListener() {</span>
+            @Override
+            public void onClick(View view) {
+<span class="fc" id="L106">                Intent intent = new Intent(GroupPageActivity.this, MainActivity.class);</span>
+<span class="fc" id="L107">                intent.putExtra(&quot;USER&quot;, user);</span>
+<span class="fc" id="L108">                startActivity(intent);</span>
+<span class="fc" id="L109">            }</span>
+        });
+
+<span class="fc" id="L112">        deleteGroup.setOnClickListener(new View.OnClickListener() {</span>
+            @Override
+            public void onClick(View view) {
+<span class="nc" id="L115">                url = MainActivity.httpServerAddress + &quot;/teams/deletebyid/&quot; + teamID;</span>
+<span class="nc" id="L116">                JsonObjectRequest request = new JsonObjectRequest(Request.Method.DELETE, url, null, new Response.Listener&lt;JSONObject&gt;() {</span>
+                    @Override
+                    public void onResponse(JSONObject response) {
+<span class="nc" id="L119">                        Intent intent = new Intent(GroupPageActivity.this, MainActivity.class);</span>
+<span class="nc" id="L120">                        intent.putExtra(&quot;USER&quot;, user);</span>
+<span class="nc" id="L121">                        startActivity(intent);</span>
+<span class="nc" id="L122">                    }</span>
+<span class="nc" id="L123">                }, new Response.ErrorListener() {</span>
+                    @Override
+                    public void onErrorResponse(VolleyError volleyError) {
+<span class="nc" id="L126">                        memberList.append(&quot;Failed to delete team!&quot;);</span>
+<span class="nc" id="L127">                    }</span>
+                });
+<span class="nc" id="L129">                queue.add(request);</span>
+<span class="nc" id="L130">            }</span>
+        });
+<span class="fc" id="L132">    }</span>
+
+    private void onSuccess(String url) {
+<span class="fc" id="L135">        url = MainActivity.httpServerAddress + &quot;/teams/getbyid/&quot; + teamID;</span>
+<span class="fc" id="L136">        JsonObjectRequest request2 = new JsonObjectRequest(Request.Method.GET, url, null, new Response.Listener&lt;JSONObject&gt;() {</span>
+            @Override
+            public void onResponse(JSONObject response) {
+                try {
+<span class="fc" id="L140">                    memberList.append(&quot;The coach of this group is &quot; + response.getJSONObject(&quot;coach&quot;).getString(&quot;userName&quot;) + &quot;\n\n&quot;);</span>
+<span class="fc" id="L141">                    JSONArray jsonArray = response.getJSONArray(&quot;members&quot;);</span>
+<span class="fc bfc" id="L142" title="All 2 branches covered.">                    for (int i = 0; i &lt; jsonArray.length(); i++) {</span>
+<span class="fc" id="L143">                        JSONObject member = jsonArray.getJSONObject(i);</span>
+<span class="fc" id="L144">                        int userNum = i + 1;</span>
+<span class="fc" id="L145">                        memberList.append(&quot;Member #&quot; + userNum + &quot; is &quot; + member.getString(&quot;userName&quot;) + &quot;\n\n&quot;);</span>
+                    }
+<span class="nc" id="L147">                } catch (JSONException e) {</span>
+<span class="nc" id="L148">                    memberList.append(&quot;Didn't work!&quot;);</span>
+<span class="fc" id="L149">                }</span>
+<span class="fc" id="L150">            }</span>
+<span class="fc" id="L151">        }, new Response.ErrorListener() {</span>
+            @Override
+            public void onErrorResponse(VolleyError volleyError) {
+<span class="nc" id="L154">                memberList.append(&quot;Network error!&quot;);</span>
+<span class="nc" id="L155">                volleyError.printStackTrace();</span>
+<span class="nc" id="L156">            }</span>
+        });
+<span class="fc" id="L158">        queue.add(request2);</span>
+<span class="fc" id="L159">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span>Generated by the Android Gradle plugin 7.4.2</div></body></html>

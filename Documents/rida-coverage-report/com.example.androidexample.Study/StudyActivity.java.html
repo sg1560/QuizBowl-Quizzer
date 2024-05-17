@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>StudyActivity.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=0;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">debug</a> &gt; <a href="index.source.html" class="el_package">com.example.androidexample.Study</a> &gt; <span class="el_source">StudyActivity.java</span></div><h1>StudyActivity.java</h1><pre class="source lang-java linenums">package com.example.androidexample.Study;
+
+import android.content.Intent;
+import android.os.Bundle;
+import android.view.View;
+import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.ImageButton;
+import android.widget.Spinner;
+
+import androidx.appcompat.app.AppCompatActivity;
+
+import com.example.androidexample.EditQuestions.EditQuestionsActivity;
+import com.example.androidexample.Chat.ChatActivity;
+import com.example.androidexample.Groups.GroupPageActivity;
+import com.example.androidexample.MainActivity;
+import com.example.androidexample.R;
+import com.example.androidexample.User.UserObject;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
+
+<span class="fc" id="L21">public class StudyActivity extends AppCompatActivity {</span>
+    private Button scienceBtn, geographyBtn, popCultureBtn, fineArtsBtn, historyBtn;
+    private Spinner dropdown;
+    private BottomNavigationView navBar;
+    private UserObject user;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+<span class="fc" id="L29">        super.onCreate(savedInstanceState);</span>
+<span class="fc" id="L30">        setContentView(R.layout.activity_study);</span>
+
+<span class="fc" id="L32">        user = (UserObject) getIntent().getSerializableExtra(&quot;USER&quot;);</span>
+
+<span class="fc" id="L34">        scienceBtn = findViewById(R.id.btnScience);</span>
+<span class="fc" id="L35">        geographyBtn = findViewById(R.id.btnGeography);</span>
+<span class="fc" id="L36">        popCultureBtn = findViewById(R.id.btnPopCulture);</span>
+<span class="fc" id="L37">        fineArtsBtn = findViewById(R.id.btnFineArts);</span>
+<span class="fc" id="L38">        historyBtn = findViewById(R.id.btnHistory);</span>
+<span class="fc" id="L39">        navBar = findViewById(R.id.bottomNavigationView);</span>
+<span class="fc" id="L40">        dropdown = findViewById(R.id.session_dropdown);</span>
+
+<span class="fc" id="L42">        navBar.setSelectedItemId(R.id.nav_study);</span>
+
+<span class="fc" id="L44">        ArrayAdapter&lt;CharSequence&gt; adapter = ArrayAdapter.createFromResource(this, R.array.sessions, R.layout.custom_spinner_item);</span>
+<span class="fc" id="L45">        adapter.setDropDownViewResource(R.layout.custom_spinner_item);</span>
+<span class="fc" id="L46">        dropdown.setAdapter(adapter);</span>
+
+<span class="fc" id="L48">        scienceBtn.setOnClickListener(new View.OnClickListener() {</span>
+            @Override
+            public void onClick(View view) {
+<span class="nc" id="L51">                Intent intent = new Intent(StudyActivity.this, FlashcardsActivity.class);</span>
+<span class="nc" id="L52">                intent.putExtra(&quot;USER&quot;, user);</span>
+<span class="nc" id="L53">                intent.putExtra(&quot;Category&quot;, &quot;11&quot;);</span>
+<span class="nc" id="L54">                dropdown.getSelectedItem().toString();</span>
+<span class="nc" id="L55">                startActivity(intent);</span>
+<span class="nc" id="L56">            }</span>
+        });
+<span class="fc" id="L58">        geographyBtn.setOnClickListener(new View.OnClickListener() {</span>
+            @Override
+            public void onClick(View view) {
+<span class="nc" id="L61">                Intent intent = new Intent(StudyActivity.this, FlashcardsActivity.class);</span>
+<span class="nc" id="L62">                intent.putExtra(&quot;USER&quot;, user);</span>
+<span class="nc" id="L63">                intent.putExtra(&quot;Category&quot;, &quot;5&quot;);</span>
+<span class="nc" id="L64">                startActivity(intent);</span>
+<span class="nc" id="L65">            }</span>
+        });
+<span class="fc" id="L67">        popCultureBtn.setOnClickListener(new View.OnClickListener() {</span>
+            @Override
+            public void onClick(View view) {
+<span class="nc" id="L70">                Intent intent = new Intent(StudyActivity.this, FlashcardsActivity.class);</span>
+<span class="nc" id="L71">                intent.putExtra(&quot;USER&quot;, user);</span>
+<span class="nc" id="L72">                intent.putExtra(&quot;Category&quot;,  &quot;10&quot;);</span>
+<span class="nc" id="L73">                startActivity(intent);</span>
+<span class="nc" id="L74">            }</span>
+        });
+<span class="fc" id="L76">        fineArtsBtn.setOnClickListener(new View.OnClickListener() {</span>
+            @Override
+            public void onClick(View view) {
+<span class="nc" id="L79">                Intent intent = new Intent(StudyActivity.this, FlashcardsActivity.class);</span>
+<span class="nc" id="L80">                intent.putExtra(&quot;USER&quot;, user);</span>
+<span class="nc" id="L81">                intent.putExtra(&quot;Category&quot;, &quot;12&quot;);</span>
+<span class="nc" id="L82">                startActivity(intent);</span>
+<span class="nc" id="L83">            }</span>
+        });
+<span class="fc" id="L85">        historyBtn.setOnClickListener(new View.OnClickListener() {</span>
+            @Override
+            public void onClick(View view) {
+<span class="nc" id="L88">                Intent intent = new Intent(StudyActivity.this, FlashcardsActivity.class);</span>
+<span class="nc" id="L89">                intent.putExtra(&quot;USER&quot;, user);</span>
+<span class="nc" id="L90">                intent.putExtra(&quot;Category&quot;, &quot;13&quot;);</span>
+<span class="nc" id="L91">                startActivity(intent);</span>
+<span class="nc" id="L92">            }</span>
+        });
+
+<span class="fc" id="L95">        navBar.setOnItemSelectedListener(item -&gt; {</span>
+            Intent intent;
+<span class="pc bpc" id="L97" title="5 of 6 branches missed.">            switch (item.getItemId()){</span>
+                case R.id.nav_home:
+<span class="nc" id="L99">                    intent = new Intent(StudyActivity.this, MainActivity.class);</span>
+<span class="nc" id="L100">                    intent.putExtra(&quot;USER&quot;, user);</span>
+<span class="nc" id="L101">                    startActivity(intent);</span>
+<span class="nc" id="L102">                    break;</span>
+                case R.id.nav_edit:
+<span class="fc" id="L104">                    intent = new Intent(StudyActivity.this, EditQuestionsActivity.class);</span>
+<span class="fc" id="L105">                    intent.putExtra(&quot;USER&quot;, user);</span>
+<span class="fc" id="L106">                    startActivity(intent);</span>
+<span class="fc" id="L107">                    break;</span>
+                case R.id.nav_study:
+<span class="nc" id="L109">                    break;</span>
+                case R.id.nav_groups:
+<span class="nc" id="L111">                    intent = new Intent(StudyActivity.this, GroupPageActivity.class);</span>
+<span class="nc" id="L112">                    intent.putExtra(&quot;USER&quot;, user);</span>
+<span class="nc" id="L113">                    startActivity(intent);</span>
+<span class="nc" id="L114">                    break;</span>
+                case R.id.nav_chat:
+<span class="nc" id="L116">                    intent = new Intent(StudyActivity.this, ChatActivity.class);</span>
+<span class="nc" id="L117">                    intent.putExtra(&quot;USER&quot;, user);</span>
+<span class="nc" id="L118">                    startActivity(intent);</span>
+                    break;
+            }
+<span class="fc" id="L121">            return true;</span>
+        });
+<span class="fc" id="L123">    }</span>
+    private long getCategoryId(String category) {
+<span class="nc bnc" id="L125" title="All 5 branches missed.">        switch (category) {</span>
+            case &quot;History&quot;:
+<span class="nc" id="L127">                return 13;</span>
+            case &quot;Pop Culture&quot;:
+<span class="nc" id="L129">                return 10;</span>
+            case &quot;Science&quot;:
+<span class="nc" id="L131">                return 11;</span>
+            case &quot;Fine Arts&quot;:
+<span class="nc" id="L133">                return 12;</span>
+            default:
+<span class="nc" id="L135">                return 5;</span>
+        }
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span>Generated by the Android Gradle plugin 7.4.2</div></body></html>

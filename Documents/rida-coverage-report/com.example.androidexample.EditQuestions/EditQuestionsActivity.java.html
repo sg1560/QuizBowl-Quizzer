@@ -1,0 +1,384 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>EditQuestionsActivity.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=0;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">debug</a> &gt; <a href="index.source.html" class="el_package">com.example.androidexample.EditQuestions</a> &gt; <span class="el_source">EditQuestionsActivity.java</span></div><h1>EditQuestionsActivity.java</h1><pre class="source lang-java linenums">package com.example.androidexample.EditQuestions;
+
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.FragmentManager;
+import androidx.lifecycle.ViewModelProvider;
+
+import android.content.Intent;
+import android.os.Bundle;
+import android.util.Log;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.Button;
+import android.widget.ListView;
+import android.widget.TextView;
+
+import com.android.volley.AuthFailureError;
+import com.android.volley.Request;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonArrayRequest;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.example.androidexample.Chat.ChatActivity;
+import com.example.androidexample.Groups.GroupPageActivity;
+import com.example.androidexample.MainActivity;
+import com.example.androidexample.R;
+import com.example.androidexample.Study.StudyActivity;
+import com.example.androidexample.User.UserObject;
+import com.example.androidexample.Networking.VolleySingleton;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+
+// Page to edit and add questions to the app
+<span class="fc" id="L41">public class EditQuestionsActivity extends AppCompatActivity implements Serializable {</span>
+    private AddQuestionsModel addQuestionsModel;
+    private FilterQuestionsModel filterQuestionsModel;
+    private Button newQuestion, saveButton, filterButton;
+
+    private BottomNavigationView navBar;
+    private TextView postResponse;
+    private ListView listView;
+    private UserObject user;
+
+    //private static final String URL_POSTMAN_POST = &quot;https://fb2a511b-3578-4818-89b1-de4ab3629707.mock.pstmn.io/post&quot;;
+
+    private static final String URL_GET_QUESTIONS = &quot;/questions&quot;;
+
+<span class="fc" id="L55">    private final String URL_CREATE_QUESTIONS = &quot;/questions/post/&quot;;</span>
+
+<span class="fc" id="L57">    private final String URL_EDIT_QUESTIONS = &quot;/questions/update/&quot;;</span>
+<span class="fc" id="L58">    private final String URL_GET_CATEGORY = &quot;/categories/getquestions/&quot;;</span>
+
+<span class="fc" id="L60">    private final String URL_DELETE_QUESTIONS = &quot;/questions/delete/&quot;;</span>
+    private QuestionListAdapter adapter;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+<span class="fc" id="L65">        super.onCreate(savedInstanceState);</span>
+<span class="fc" id="L66">        setContentView(R.layout.activity_edit_questions);</span>
+<span class="fc" id="L67">        user = (UserObject) getIntent().getSerializableExtra(&quot;USER&quot;);</span>
+
+
+<span class="fc" id="L70">        addQuestionsModel = new ViewModelProvider(this).get(AddQuestionsModel.class);</span>
+<span class="fc" id="L71">        filterQuestionsModel = new ViewModelProvider(this).get(FilterQuestionsModel.class);</span>
+
+<span class="fc" id="L73">        listView = findViewById(R.id.questionList);</span>
+<span class="fc" id="L74">        adapter = new QuestionListAdapter(this, new ArrayList&lt;&gt;());</span>
+<span class="fc" id="L75">        postResponse = findViewById(R.id.postResponse);</span>
+<span class="fc" id="L76">        postResponse.setVisibility(View.INVISIBLE);</span>
+
+<span class="fc" id="L78">        filterButton = findViewById(R.id.btnFilter);</span>
+<span class="fc" id="L79">        saveButton = findViewById(R.id.btnSave);</span>
+<span class="fc" id="L80">        newQuestion = findViewById(R.id.btnNewQuestion);</span>
+<span class="fc" id="L81">        navBar = findViewById(R.id.bottomNavigationView);</span>
+<span class="fc" id="L82">        listView.setAdapter(adapter);</span>
+<span class="fc" id="L83">        navBar.setSelectedItemId(R.id.nav_edit);</span>
+
+<span class="fc" id="L85">        getExistingQuestions();</span>
+
+
+<span class="fc" id="L88">        FragmentManager fragmentManager = getSupportFragmentManager();</span>
+
+<span class="fc" id="L90">        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {</span>
+            @Override
+            public void onItemClick(AdapterView&lt;?&gt; adapterView, View view, int i, long l) {
+<span class="nc" id="L93">                new QuestionAdder(adapter.getItem(i)).show(fragmentManager, &quot;editQuestionTag&quot;);</span>
+
+<span class="nc" id="L95">            }</span>
+        });
+
+<span class="fc" id="L98">        newQuestion.setOnClickListener(new View.OnClickListener() {</span>
+            @Override
+            public void onClick(View v) {
+<span class="fc" id="L101">                new QuestionAdder().show(fragmentManager, &quot;newQuestionTag&quot;);</span>
+<span class="fc" id="L102">            }</span>
+        });
+
+<span class="fc" id="L105">        saveButton.setOnClickListener(new View.OnClickListener() {</span>
+            @Override
+            public void onClick(View view) {
+<span class="nc" id="L108">                Intent intent = new Intent(EditQuestionsActivity.this, MainActivity.class);</span>
+<span class="nc" id="L109">                intent.putExtra(&quot;USER&quot;, user);</span>
+<span class="nc" id="L110">                startActivity(intent);</span>
+<span class="nc" id="L111">            }</span>
+        });
+
+<span class="fc" id="L114">        filterButton.setOnClickListener(new View.OnClickListener(){</span>
+            @Override
+            public void onClick(View view) {
+<span class="fc" id="L117">                new FilterQuestionsFragment().show(fragmentManager, &quot;FilterQuestionsTag&quot;);</span>
+<span class="fc" id="L118">            }</span>
+        });
+
+<span class="fc" id="L121">        addQuestionsModel.getObject().observe(this, object -&gt; {</span>
+<span class="nc" id="L122">            adapter.add((QuestionObject) addQuestionsModel.getObject().getValue());</span>
+<span class="nc" id="L123">            postRequest((QuestionObject) addQuestionsModel.getObject().getValue());</span>
+<span class="nc" id="L124">        });</span>
+
+<span class="fc" id="L126">        addQuestionsModel.getDelete().observe(this, delete -&gt;{</span>
+<span class="nc" id="L127">            adapter.remove((QuestionObject) addQuestionsModel.getDelete().getValue());</span>
+<span class="nc" id="L128">            deleteRequest(((QuestionObject) addQuestionsModel.getDelete().getValue()).getId());</span>
+<span class="nc" id="L129">        });</span>
+
+<span class="fc" id="L131">        addQuestionsModel.getEdited().observe(this, edited -&gt;{</span>
+<span class="nc" id="L132">            adapter.notifyDataSetChanged();</span>
+<span class="nc" id="L133">            putRequest((QuestionObject) addQuestionsModel.getEdited().getValue());</span>
+<span class="nc" id="L134">        });</span>
+
+<span class="fc" id="L136">        filterQuestionsModel.getCategory().observe(this, category -&gt;{</span>
+<span class="nc" id="L137">            adapter.clear();</span>
+<span class="nc" id="L138">            makeCategoryRequest(getCategoryId(filterQuestionsModel.getCategory().getValue()));</span>
+<span class="nc" id="L139">        });</span>
+
+<span class="fc" id="L141">        navBar.setOnItemSelectedListener(item -&gt; {</span>
+            Intent intent;
+<span class="pc bpc" id="L143" title="5 of 6 branches missed.">            switch (item.getItemId()){</span>
+                case R.id.nav_home:
+<span class="fc" id="L145">                    intent = new Intent(EditQuestionsActivity.this, MainActivity.class);</span>
+<span class="fc" id="L146">                    intent.putExtra(&quot;USER&quot;, user);</span>
+<span class="fc" id="L147">                    startActivity(intent);</span>
+<span class="fc" id="L148">                    break;</span>
+                case R.id.nav_edit:
+<span class="nc" id="L150">                    break;</span>
+                case R.id.nav_study:
+<span class="nc" id="L152">                    intent = new Intent(EditQuestionsActivity.this, StudyActivity.class);</span>
+<span class="nc" id="L153">                    intent.putExtra(&quot;USER&quot;, user);</span>
+<span class="nc" id="L154">                    startActivity(intent);</span>
+<span class="nc" id="L155">                    break;</span>
+                case R.id.nav_groups:
+<span class="nc" id="L157">                    intent = new Intent(EditQuestionsActivity.this, GroupPageActivity.class);</span>
+<span class="nc" id="L158">                    intent.putExtra(&quot;USER&quot;, user);</span>
+<span class="nc" id="L159">                    startActivity(intent);</span>
+<span class="nc" id="L160">                    break;</span>
+                case R.id.nav_chat:
+<span class="nc" id="L162">                    intent = new Intent(EditQuestionsActivity.this, ChatActivity.class);</span>
+<span class="nc" id="L163">                    intent.putExtra(&quot;USER&quot;, user);</span>
+<span class="nc" id="L164">                    startActivity(intent);</span>
+                    break;
+            }
+<span class="fc" id="L167">            return true;</span>
+        });
+
+<span class="fc" id="L170">    }</span>
+    private long getCategoryId(String category){
+<span class="nc bnc" id="L172" title="All 5 branches missed.">        switch (category){</span>
+            case &quot;History&quot;:
+<span class="nc" id="L174">                return 13;</span>
+            case &quot;Pop Culture&quot;:
+<span class="nc" id="L176">                return 10;</span>
+            case &quot;Science&quot;:
+<span class="nc" id="L178">                return 11;</span>
+            case &quot;Fine Arts&quot;:
+<span class="nc" id="L180">                return 12;</span>
+            default:
+<span class="nc" id="L182">                return 5;</span>
+        }
+    }
+    private void getExistingQuestions() {
+<span class="fc" id="L186">        JsonArrayRequest jsonArrReq = new JsonArrayRequest(</span>
+                Request.Method.GET,
+                MainActivity.httpServerAddress + URL_GET_QUESTIONS,
+                null, // Pass null as the request body since it's a GET request
+<span class="fc" id="L190">                new Response.Listener&lt;JSONArray&gt;() {</span>
+                    @Override
+                    public void onResponse(JSONArray response) {
+<span class="fc" id="L193">                        Log.d(&quot;Volley Response&quot;, response.toString());</span>
+
+                        // Parse the JSON array and add data to the adapter
+<span class="fc bfc" id="L196" title="All 2 branches covered.">                        for (int i = 0; i &lt; response.length(); i++) {</span>
+                            try {
+<span class="fc" id="L198">                                adapter.add(QuestionObject.getQuestionFromJSON(response.getJSONObject(i)));</span>
+<span class="fc" id="L199">                            } catch (JSONException e) {</span>
+<span class="fc" id="L200">                                e.printStackTrace();</span>
+<span class="fc" id="L201">                            }</span>
+                        }
+<span class="fc" id="L203">                    }</span>
+                },
+<span class="fc" id="L205">                new Response.ErrorListener() {</span>
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+<span class="nc" id="L208">                        Log.e(&quot;Volley Error&quot;, error.toString());</span>
+<span class="nc" id="L209">                    }</span>
+<span class="fc" id="L210">                }) {</span>
+        };
+
+        // Adding request to request queue
+<span class="fc" id="L214">        VolleySingleton.getInstance(getApplicationContext()).addToRequestQueue(jsonArrReq);</span>
+<span class="fc" id="L215">    }</span>
+
+    private void postRequest(QuestionObject question) {
+        //String json = &quot;{\&quot;question\&quot;:\&quot;test\&quot;, \&quot;answer\&quot;:\&quot;test\&quot;}&quot;;
+<span class="nc" id="L219">        String URL = MainActivity.httpServerAddress + URL_CREATE_QUESTIONS + getCategoryId(question.getCategory()) + &quot;/&quot; + question.getQuestion() + &quot;/&quot; + question.getAnswer() + &quot;/&quot; + 10 + &quot;?owner=&quot; + user.getId();</span>
+<span class="nc" id="L220">        JsonObjectRequest request = new JsonObjectRequest(</span>
+                Request.Method.POST,
+                URL,
+                null,
+<span class="nc" id="L224">                new Response.Listener&lt;JSONObject&gt;() {</span>
+                    @Override
+                    public void onResponse(JSONObject response) {
+<span class="nc" id="L227">                        postResponse.setText(response.toString());</span>
+<span class="nc" id="L228">                    }</span>
+                },
+<span class="nc" id="L230">                new Response.ErrorListener() {</span>
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+<span class="nc" id="L233">                        postResponse.setText(&quot;Error:&quot; + error.getMessage());</span>
+<span class="nc" id="L234">                    }</span>
+                }
+<span class="nc" id="L236">        ){</span>
+            @Override
+            public Map&lt;String, String&gt; getHeaders() throws AuthFailureError {
+<span class="nc" id="L239">                HashMap&lt;String, String&gt; headers = new HashMap&lt;String, String&gt;();</span>
+                //                headers.put(&quot;Authorization&quot;, &quot;Bearer YOUR_ACCESS_TOKEN&quot;);
+                //                headers.put(&quot;Content-Type&quot;, &quot;application/json&quot;);
+<span class="nc" id="L242">                return headers;</span>
+            }
+
+            @Override
+            protected Map&lt;String, String&gt; getParams() {
+<span class="nc" id="L247">                Map&lt;String, String&gt; params = new HashMap&lt;String, String&gt;();</span>
+                //                params.put(&quot;param1&quot;, &quot;value1&quot;);
+                //                params.put(&quot;param2&quot;, &quot;value2&quot;);
+<span class="nc" id="L250">                return params;</span>
+            }
+        };
+
+        // Adding request to request queue
+<span class="nc" id="L255">        VolleySingleton.getInstance(getApplicationContext()).addToRequestQueue(request);</span>
+<span class="nc" id="L256">    }</span>
+    private void putRequest(QuestionObject question) {
+<span class="nc" id="L258">        String URL = MainActivity.httpServerAddress + URL_EDIT_QUESTIONS + question.getId();</span>
+<span class="nc" id="L259">        String json = &quot;{\&quot;question\&quot;:\&quot;&quot; + question.getQuestion() + &quot;\&quot;, \&quot;answer\&quot;:\&quot;&quot; + question.getAnswer() + &quot;\&quot;, \&quot;category\&quot;:\&quot;&quot;  + question.getCategory() + &quot;\&quot;}&quot; ;</span>
+
+        // Convert input to JSONObject
+<span class="nc" id="L262">        JSONObject postBody = null;</span>
+        try{
+            // etRequest should contain a JSON object string as your POST body
+            // similar to what you would have in POSTMAN-body field
+            // and the fields should match with the object structure of @RequestBody on sb
+<span class="nc" id="L267">            postBody = new JSONObject(json);</span>
+<span class="nc" id="L268">        } catch (Exception e){</span>
+<span class="nc" id="L269">            Log.i(&quot;ERROR&quot;, &quot;postRequest: bad&quot;);</span>
+<span class="nc" id="L270">            e.printStackTrace();</span>
+<span class="nc" id="L271">        }</span>
+
+<span class="nc" id="L273">        JsonObjectRequest request = new JsonObjectRequest(</span>
+                Request.Method.PUT,
+                URL,
+                null,
+<span class="nc" id="L277">                new Response.Listener&lt;JSONObject&gt;() {</span>
+                    @Override
+                    public void onResponse(JSONObject response) {
+<span class="nc" id="L280">                        postResponse.setText(response.toString());</span>
+<span class="nc" id="L281">                    }</span>
+                },
+<span class="nc" id="L283">                new Response.ErrorListener() {</span>
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+<span class="nc" id="L286">                        postResponse.setText(&quot;Error:&quot; + error.getMessage());</span>
+<span class="nc" id="L287">                    }</span>
+                }
+<span class="nc" id="L289">        ){</span>
+            @Override
+            public Map&lt;String, String&gt; getHeaders() throws AuthFailureError {
+<span class="nc" id="L292">                HashMap&lt;String, String&gt; headers = new HashMap&lt;String, String&gt;();</span>
+                //                headers.put(&quot;Authorization&quot;, &quot;Bearer YOUR_ACCESS_TOKEN&quot;);
+                //                headers.put(&quot;Content-Type&quot;, &quot;application/json&quot;);
+<span class="nc" id="L295">                return headers;</span>
+            }
+
+            @Override
+            protected Map&lt;String, String&gt; getParams() {
+<span class="nc" id="L300">                Map&lt;String, String&gt; params = new HashMap&lt;String, String&gt;();</span>
+                //                params.put(&quot;param1&quot;, &quot;value1&quot;);
+                //                params.put(&quot;param2&quot;, &quot;value2&quot;);
+<span class="nc" id="L303">                return params;</span>
+            }
+        };
+
+        // Adding request to request queue
+<span class="nc" id="L308">        VolleySingleton.getInstance(getApplicationContext()).addToRequestQueue(request);</span>
+<span class="nc" id="L309">    }</span>
+    private void makeCategoryRequest(Long category) {
+
+<span class="nc" id="L312">        String URL = MainActivity.httpServerAddress + URL_GET_CATEGORY + category;</span>
+<span class="nc" id="L313">        JsonArrayRequest jsonArrReq = new JsonArrayRequest(</span>
+                Request.Method.GET,
+                URL,
+                null, // Pass null as the request body since it's a GET request
+<span class="nc" id="L317">                new Response.Listener&lt;JSONArray&gt;() {</span>
+                    @Override
+                    public void onResponse(JSONArray response) {
+<span class="nc" id="L320">                        Log.d(&quot;Volley Response&quot;, response.toString());</span>
+
+                        // Parse the JSON array and add data to the adapter
+<span class="nc bnc" id="L323" title="All 2 branches missed.">                        for (int i = 0; i &lt; response.length(); i++) {</span>
+                            try {
+<span class="nc" id="L325">                                adapter.add(QuestionObject.getQuestionFromJSON(response.getJSONObject(i)));</span>
+<span class="nc" id="L326">                            } catch (JSONException e) {</span>
+<span class="nc" id="L327">                                e.printStackTrace();</span>
+<span class="nc" id="L328">                            }</span>
+                        }
+<span class="nc" id="L330">                    }</span>
+                },
+<span class="nc" id="L332">                new Response.ErrorListener() {</span>
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+<span class="nc" id="L335">                        Log.e(&quot;Volley Error&quot;, error.toString());</span>
+<span class="nc" id="L336">                    }</span>
+<span class="nc" id="L337">                }) {</span>
+        };
+
+        // Adding request to request queue
+<span class="nc" id="L341">        VolleySingleton.getInstance(getApplicationContext()).addToRequestQueue(jsonArrReq);</span>
+<span class="nc" id="L342">    }</span>
+    private void deleteRequest(long questionId) {
+<span class="nc" id="L344">        String URL = MainActivity.httpServerAddress + URL_DELETE_QUESTIONS + questionId;</span>
+
+<span class="nc" id="L346">        JsonObjectRequest request = new JsonObjectRequest(</span>
+                Request.Method.DELETE,
+                URL,
+                null,
+<span class="nc" id="L350">                new Response.Listener&lt;JSONObject&gt;() {</span>
+                    @Override
+                    public void onResponse(JSONObject response) {
+<span class="nc" id="L353">                        postResponse.setText(response.toString());</span>
+<span class="nc" id="L354">                    }</span>
+                },
+<span class="nc" id="L356">                new Response.ErrorListener() {</span>
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+<span class="nc" id="L359">                        postResponse.setText(&quot;Error:&quot; + error.getMessage());</span>
+<span class="nc" id="L360">                    }</span>
+                }
+<span class="nc" id="L362">        ){</span>
+            @Override
+            public Map&lt;String, String&gt; getHeaders() throws AuthFailureError {
+<span class="nc" id="L365">                HashMap&lt;String, String&gt; headers = new HashMap&lt;String, String&gt;();</span>
+                //                headers.put(&quot;Authorization&quot;, &quot;Bearer YOUR_ACCESS_TOKEN&quot;);
+                //                headers.put(&quot;Content-Type&quot;, &quot;application/json&quot;);
+<span class="nc" id="L368">                return headers;</span>
+            }
+
+            @Override
+            protected Map&lt;String, String&gt; getParams() {
+<span class="nc" id="L373">                Map&lt;String, String&gt; params = new HashMap&lt;String, String&gt;();</span>
+                //                params.put(&quot;param1&quot;, &quot;value1&quot;);
+                //                params.put(&quot;param2&quot;, &quot;value2&quot;);
+<span class="nc" id="L376">                return params;</span>
+            }
+        };
+
+        // Adding request to request queue
+<span class="nc" id="L381">        VolleySingleton.getInstance(getApplicationContext()).addToRequestQueue(request);</span>
+<span class="nc" id="L382">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span>Generated by the Android Gradle plugin 7.4.2</div></body></html>

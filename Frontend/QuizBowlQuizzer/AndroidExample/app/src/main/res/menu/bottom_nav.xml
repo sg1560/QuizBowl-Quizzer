@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/nav_edit"
+        android:title="Edit"
+        android:icon="@drawable/edit_button"/>
+    <item
+        android:id="@+id/nav_study"
+        android:title="Study"
+        android:icon="@drawable/study_button"/>
+    <item
+        android:id="@+id/nav_home"
+        android:title="Home"
+        android:icon="@drawable/home_button"/>
+
+    <item
+        android:id="@+id/nav_groups"
+        android:title="Group"
+        android:icon="@drawable/group_button"/>
+    <item
+        android:id="@+id/nav_chat"
+        android:title="Chat"
+        android:icon="@drawable/chat_button"/>
+</menu>

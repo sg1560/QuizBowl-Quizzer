@@ -1,0 +1,220 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>StudyActivity.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=0;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">debug</a> &gt; <a href="index.source.html" class="el_package">com.example.androidexample.Study</a> &gt; <span class="el_source">StudyActivity.java</span></div><h1>StudyActivity.java</h1><pre class="source lang-java linenums">package com.example.androidexample.Study;
+
+import android.content.Intent;
+import android.os.Bundle;
+import android.view.View;
+import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.ImageButton;
+import android.widget.Spinner;
+
+import androidx.appcompat.app.AppCompatActivity;
+
+import com.example.androidexample.EditQuestions.EditQuestionsActivity;
+import com.example.androidexample.Chat.ChatActivity;
+import com.example.androidexample.Groups.GroupPageActivity;
+import com.example.androidexample.MainActivity;
+import com.example.androidexample.R;
+import com.example.androidexample.User.UserObject;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
+
+<span class="fc" id="L21">public class StudyActivity extends AppCompatActivity {</span>
+    private Button scienceBtn, geographyBtn, popCultureBtn, fineArtsBtn, historyBtn, allBtn;
+    private Spinner dropdown;
+    private BottomNavigationView navBar;
+    private UserObject user;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+<span class="fc" id="L29">        super.onCreate(savedInstanceState);</span>
+<span class="fc" id="L30">        setContentView(R.layout.activity_study);</span>
+
+<span class="fc" id="L32">        user = (UserObject) getIntent().getSerializableExtra(&quot;USER&quot;);</span>
+
+<span class="fc" id="L34">        scienceBtn = findViewById(R.id.btnScience);</span>
+<span class="fc" id="L35">        geographyBtn = findViewById(R.id.btnGeography);</span>
+<span class="fc" id="L36">        popCultureBtn = findViewById(R.id.btnPopCulture);</span>
+<span class="fc" id="L37">        fineArtsBtn = findViewById(R.id.btnFineArts);</span>
+<span class="fc" id="L38">        historyBtn = findViewById(R.id.btnHistory);</span>
+<span class="fc" id="L39">        allBtn = findViewById(R.id.btnAll);</span>
+<span class="fc" id="L40">        navBar = findViewById(R.id.bottomNavigationView);</span>
+<span class="fc" id="L41">        dropdown = findViewById(R.id.session_dropdown);</span>
+
+<span class="fc" id="L43">        navBar.setSelectedItemId(R.id.nav_study);</span>
+
+<span class="fc" id="L45">        ArrayAdapter&lt;CharSequence&gt; adapter = ArrayAdapter.createFromResource(this, R.array.sessions, R.layout.custom_spinner_item);</span>
+<span class="fc" id="L46">        adapter.setDropDownViewResource(R.layout.custom_spinner_item);</span>
+<span class="fc" id="L47">        dropdown.setAdapter(adapter);</span>
+
+<span class="fc" id="L49">        scienceBtn.setOnClickListener(new View.OnClickListener() {</span>
+            @Override
+            public void onClick(View view) {
+<span class="nc bnc" id="L52" title="All 2 branches missed.">                if (dropdown.getSelectedItem().toString().equals(&quot;Competitive&quot;)) {</span>
+<span class="nc" id="L53">                    Intent intent = new Intent(StudyActivity.this, CompetitiveSessionActivity.class);</span>
+<span class="nc" id="L54">                    intent.putExtra(&quot;USER&quot;, user);</span>
+<span class="nc" id="L55">                    intent.putExtra(&quot;Category&quot;, MainActivity.getCategoryId(&quot;Science&quot;) + &quot;&quot;);</span>
+<span class="nc" id="L56">                    startActivity(intent);</span>
+<span class="nc" id="L57">                }</span>
+                else {
+<span class="nc" id="L59">                    Intent intent = new Intent(StudyActivity.this, CollaborativeSessionActivity.class);</span>
+<span class="nc" id="L60">                    intent.putExtra(&quot;USER&quot;, user);</span>
+<span class="nc" id="L61">                    intent.putExtra(&quot;Category&quot;, MainActivity.getCategoryId(&quot;Science&quot;) + &quot;&quot;);</span>
+<span class="nc bnc" id="L62" title="All 2 branches missed.">                    if (dropdown.getSelectedItem().toString().equals(&quot;Solo&quot;)) {</span>
+<span class="nc" id="L63">                        intent.putExtra(&quot;Solo&quot;, true);</span>
+                    }
+                    else {
+<span class="nc" id="L66">                        intent.putExtra(&quot;Solo&quot;, false);</span>
+                    }
+<span class="nc" id="L68">                    dropdown.getSelectedItem().toString();</span>
+<span class="nc" id="L69">                    startActivity(intent);</span>
+                }
+<span class="nc" id="L71">            }</span>
+        });
+<span class="fc" id="L73">        geographyBtn.setOnClickListener(new View.OnClickListener() {</span>
+            @Override
+            public void onClick(View view) {
+<span class="nc bnc" id="L76" title="All 2 branches missed.">                if (dropdown.getSelectedItem().toString().equals(&quot;Competitive&quot;)) {</span>
+<span class="nc" id="L77">                    Intent intent = new Intent(StudyActivity.this, CompetitiveSessionActivity.class);</span>
+<span class="nc" id="L78">                    intent.putExtra(&quot;USER&quot;, user);</span>
+<span class="nc" id="L79">                    intent.putExtra(&quot;Category&quot;, MainActivity.getCategoryId(&quot;Geography&quot;) + &quot;&quot;);</span>
+<span class="nc" id="L80">                    startActivity(intent);</span>
+<span class="nc" id="L81">                } else {</span>
+<span class="nc" id="L82">                    Intent intent = new Intent(StudyActivity.this, CollaborativeSessionActivity.class);</span>
+<span class="nc" id="L83">                    intent.putExtra(&quot;USER&quot;, user);</span>
+<span class="nc" id="L84">                    intent.putExtra(&quot;Category&quot;, MainActivity.getCategoryId(&quot;Geography&quot;) + &quot;&quot;);</span>
+<span class="nc bnc" id="L85" title="All 2 branches missed.">                    if (dropdown.getSelectedItem().toString().equals(&quot;Solo&quot;)) {</span>
+<span class="nc" id="L86">                        intent.putExtra(&quot;Solo&quot;, true);</span>
+                    }
+                    else {
+<span class="nc" id="L89">                        intent.putExtra(&quot;Solo&quot;, false);</span>
+                    }
+<span class="nc" id="L91">                    startActivity(intent);</span>
+                }
+<span class="nc" id="L93">            }</span>
+        });
+<span class="fc" id="L95">        popCultureBtn.setOnClickListener(new View.OnClickListener() {</span>
+            @Override
+            public void onClick(View view) {
+<span class="nc bnc" id="L98" title="All 2 branches missed.">                if (dropdown.getSelectedItem().toString().equals(&quot;Competitive&quot;)) {</span>
+<span class="nc" id="L99">                    Intent intent = new Intent(StudyActivity.this, CompetitiveSessionActivity.class);</span>
+<span class="nc" id="L100">                    intent.putExtra(&quot;USER&quot;, user);</span>
+<span class="nc" id="L101">                    intent.putExtra(&quot;Category&quot;, MainActivity.getCategoryId(&quot;Pop Culture&quot;) + &quot;&quot;);</span>
+<span class="nc" id="L102">                    startActivity(intent);</span>
+<span class="nc" id="L103">                } else {</span>
+<span class="nc" id="L104">                    Intent intent = new Intent(StudyActivity.this, CollaborativeSessionActivity.class);</span>
+<span class="nc" id="L105">                    intent.putExtra(&quot;USER&quot;, user);</span>
+<span class="nc" id="L106">                    intent.putExtra(&quot;Category&quot;, MainActivity.getCategoryId(&quot;Pop Culture&quot;) + &quot;&quot;);</span>
+<span class="nc bnc" id="L107" title="All 2 branches missed.">                    if (dropdown.getSelectedItem().toString().equals(&quot;Solo&quot;)) {</span>
+<span class="nc" id="L108">                        intent.putExtra(&quot;Solo&quot;, true);</span>
+                    }
+                    else {
+<span class="nc" id="L111">                        intent.putExtra(&quot;Solo&quot;, false);</span>
+                    }
+<span class="nc" id="L113">                    startActivity(intent);</span>
+                }
+<span class="nc" id="L115">            }</span>
+        });
+<span class="fc" id="L117">        fineArtsBtn.setOnClickListener(new View.OnClickListener() {</span>
+            @Override
+            public void onClick(View view) {
+<span class="nc bnc" id="L120" title="All 2 branches missed.">                if (dropdown.getSelectedItem().toString().equals(&quot;Competitive&quot;)) {</span>
+<span class="nc" id="L121">                    Intent intent = new Intent(StudyActivity.this, CompetitiveSessionActivity.class);</span>
+<span class="nc" id="L122">                    intent.putExtra(&quot;USER&quot;, user);</span>
+<span class="nc" id="L123">                    intent.putExtra(&quot;Category&quot;, MainActivity.getCategoryId(&quot;Fine Arts&quot;) + &quot;&quot;);</span>
+<span class="nc" id="L124">                    startActivity(intent);</span>
+<span class="nc" id="L125">                } else {</span>
+<span class="nc" id="L126">                    Intent intent = new Intent(StudyActivity.this, CollaborativeSessionActivity.class);</span>
+<span class="nc" id="L127">                    intent.putExtra(&quot;USER&quot;, user);</span>
+<span class="nc" id="L128">                    intent.putExtra(&quot;Category&quot;, MainActivity.getCategoryId(&quot;Fine Arts&quot;) + &quot;&quot;);</span>
+<span class="nc bnc" id="L129" title="All 2 branches missed.">                    if (dropdown.getSelectedItem().toString().equals(&quot;Solo&quot;)) {</span>
+<span class="nc" id="L130">                        intent.putExtra(&quot;Solo&quot;, true);</span>
+                    }
+                    else {
+<span class="nc" id="L133">                        intent.putExtra(&quot;Solo&quot;, false);</span>
+                    }
+<span class="nc" id="L135">                    startActivity(intent);</span>
+                }
+<span class="nc" id="L137">            }</span>
+        });
+<span class="fc" id="L139">        historyBtn.setOnClickListener(new View.OnClickListener() {</span>
+            @Override
+            public void onClick(View view) {
+<span class="nc bnc" id="L142" title="All 2 branches missed.">                if (dropdown.getSelectedItem().toString().equals(&quot;Competitive&quot;)) {</span>
+<span class="nc" id="L143">                    Intent intent = new Intent(StudyActivity.this, CompetitiveSessionActivity.class);</span>
+<span class="nc" id="L144">                    intent.putExtra(&quot;USER&quot;, user);</span>
+<span class="nc" id="L145">                    intent.putExtra(&quot;Category&quot;, MainActivity.getCategoryId(&quot;History&quot;) + &quot;&quot;);</span>
+<span class="nc" id="L146">                    startActivity(intent);</span>
+<span class="nc" id="L147">                } else {</span>
+<span class="nc" id="L148">                    Intent intent = new Intent(StudyActivity.this, CollaborativeSessionActivity.class);</span>
+<span class="nc" id="L149">                    intent.putExtra(&quot;USER&quot;, user);</span>
+<span class="nc" id="L150">                    intent.putExtra(&quot;Category&quot;, MainActivity.getCategoryId(&quot;History&quot;) + &quot;&quot;);</span>
+<span class="nc bnc" id="L151" title="All 2 branches missed.">                    if (dropdown.getSelectedItem().toString().equals(&quot;Solo&quot;)) {</span>
+<span class="nc" id="L152">                        intent.putExtra(&quot;Solo&quot;, true);</span>
+                    }
+                    else {
+<span class="nc" id="L155">                        intent.putExtra(&quot;Solo&quot;, false);</span>
+                    }
+<span class="nc" id="L157">                    startActivity(intent);</span>
+                }
+<span class="nc" id="L159">            }</span>
+        });
+<span class="fc" id="L161">        allBtn.setOnClickListener(new View.OnClickListener() {</span>
+            @Override
+            public void onClick(View view) {
+<span class="nc bnc" id="L164" title="All 2 branches missed.">                if (dropdown.getSelectedItem().toString().equals(&quot;Competitive&quot;)) {</span>
+<span class="nc" id="L165">                    Intent intent = new Intent(StudyActivity.this, CompetitiveSessionActivity.class);</span>
+<span class="nc" id="L166">                    intent.putExtra(&quot;USER&quot;, user);</span>
+<span class="nc" id="L167">                    intent.putExtra(&quot;Category&quot;, &quot;&quot;);</span>
+<span class="nc bnc" id="L168" title="All 2 branches missed.">                    if (dropdown.getSelectedItem().toString().equals(&quot;Solo&quot;)) {</span>
+<span class="nc" id="L169">                        intent.putExtra(&quot;Solo&quot;, true);</span>
+                    }
+                    else {
+<span class="nc" id="L172">                        intent.putExtra(&quot;Solo&quot;, false);</span>
+                    }
+<span class="nc" id="L174">                    startActivity(intent);</span>
+<span class="nc" id="L175">                } else {</span>
+<span class="nc" id="L176">                    Intent intent = new Intent(StudyActivity.this, CollaborativeSessionActivity.class);</span>
+<span class="nc" id="L177">                    intent.putExtra(&quot;USER&quot;, user);</span>
+<span class="nc" id="L178">                    intent.putExtra(&quot;Category&quot;, &quot;&quot;);</span>
+<span class="nc bnc" id="L179" title="All 2 branches missed.">                    if (dropdown.getSelectedItem().toString().equals(&quot;Solo&quot;)) {</span>
+<span class="nc" id="L180">                        intent.putExtra(&quot;Solo&quot;, true);</span>
+                    }
+                    else {
+<span class="nc" id="L183">                        intent.putExtra(&quot;Solo&quot;, false);</span>
+                    }
+<span class="nc" id="L185">                    startActivity(intent);</span>
+                }
+<span class="nc" id="L187">            }</span>
+        });
+
+<span class="fc" id="L190">        navBar.setOnItemSelectedListener(item -&gt; {</span>
+            Intent intent;
+<span class="pc bpc" id="L192" title="5 of 6 branches missed.">            switch (item.getItemId()){</span>
+                case R.id.nav_home:
+<span class="nc" id="L194">                    intent = new Intent(StudyActivity.this, MainActivity.class);</span>
+<span class="nc" id="L195">                    intent.putExtra(&quot;USER&quot;, user);</span>
+<span class="nc" id="L196">                    startActivity(intent);</span>
+<span class="nc" id="L197">                    break;</span>
+                case R.id.nav_edit:
+<span class="fc" id="L199">                    intent = new Intent(StudyActivity.this, EditQuestionsActivity.class);</span>
+<span class="fc" id="L200">                    intent.putExtra(&quot;USER&quot;, user);</span>
+<span class="fc" id="L201">                    startActivity(intent);</span>
+<span class="fc" id="L202">                    break;</span>
+                case R.id.nav_study:
+<span class="nc" id="L204">                    break;</span>
+                case R.id.nav_groups:
+<span class="nc" id="L206">                    intent = new Intent(StudyActivity.this, GroupPageActivity.class);</span>
+<span class="nc" id="L207">                    intent.putExtra(&quot;USER&quot;, user);</span>
+<span class="nc" id="L208">                    startActivity(intent);</span>
+<span class="nc" id="L209">                    break;</span>
+                case R.id.nav_chat:
+<span class="nc" id="L211">                    intent = new Intent(StudyActivity.this, ChatActivity.class);</span>
+<span class="nc" id="L212">                    intent.putExtra(&quot;USER&quot;, user);</span>
+<span class="nc" id="L213">                    startActivity(intent);</span>
+                    break;
+            }
+<span class="fc" id="L216">            return true;</span>
+        });
+<span class="fc" id="L218">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span>Generated by the Android Gradle plugin 7.4.2</div></body></html>

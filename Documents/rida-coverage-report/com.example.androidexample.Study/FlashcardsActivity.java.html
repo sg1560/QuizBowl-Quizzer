@@ -1,0 +1,253 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>FlashcardsActivity.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=0;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">debug</a> &gt; <a href="index.source.html" class="el_package">com.example.androidexample.Study</a> &gt; <span class="el_source">FlashcardsActivity.java</span></div><h1>FlashcardsActivity.java</h1><pre class="source lang-java linenums">package com.example.androidexample.Study;
+
+
+import androidx.appcompat.app.AppCompatActivity;
+
+import android.content.Intent;
+import android.os.Bundle;
+import android.util.Log;
+import android.view.View;
+import android.widget.Button;
+import android.widget.TextView;
+
+import com.example.androidexample.EditQuestions.EditQuestionsActivity;
+import com.example.androidexample.EditQuestions.QuestionObject;
+import com.example.androidexample.Chat.ChatActivity;
+import com.example.androidexample.Groups.GroupPageActivity;
+import com.example.androidexample.MainActivity;
+import com.example.androidexample.R;
+import com.example.androidexample.User.UserObject;
+import com.example.androidexample.Networking.WebSocketListener;
+import com.example.androidexample.Networking.WebSocketManager1;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
+
+import org.java_websocket.handshake.ServerHandshake;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.ArrayList;
+
+
+<span class="nc" id="L32">public class FlashcardsActivity extends AppCompatActivity implements WebSocketListener {</span>
+
+    private TextView QAtext, flashcardText, topSessionInfo, bottomSessionInfo, progressText;
+    private Button seeAnswerButton, correctButton, incorrectButton;
+    private ArrayList&lt;QuestionObject&gt; flashcardList;
+    private int currentQuestionIndex;
+    private boolean isQuestion, isStart, isEnd;
+    private UserObject user;
+    private BottomNavigationView navBar;
+<span class="nc" id="L41">    private final String URL_START = MainActivity.wsServerAddress + &quot;/session/&quot;;</span>
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+<span class="nc" id="L45">        super.onCreate(savedInstanceState);</span>
+<span class="nc" id="L46">        user = (UserObject) getIntent().getSerializableExtra(&quot;USER&quot;);</span>
+<span class="nc" id="L47">        String URL = URL_START + &quot;Collaborative/&quot; + user.getId() + &quot;/team/&quot; + user.getGroupID() + &quot;/size/5/category/&quot; + getIntent().getStringExtra(&quot;Category&quot;);</span>
+<span class="nc" id="L48">        Log.i(&quot;Websocket&quot;, URL);</span>
+<span class="nc" id="L49">        WebSocketManager1.getInstance().setWebSocketListener(FlashcardsActivity.this);</span>
+<span class="nc" id="L50">        WebSocketManager1.getInstance().connectWebSocket(URL);</span>
+
+<span class="nc" id="L52">        setContentView(R.layout.activity_flashcards);</span>
+
+<span class="nc" id="L54">        QAtext = findViewById(R.id.QAtext);</span>
+<span class="nc" id="L55">        flashcardText = findViewById(R.id.flashcard);</span>
+<span class="nc" id="L56">        seeAnswerButton = findViewById(R.id.btnSeeAnswer);</span>
+<span class="nc" id="L57">        correctButton = findViewById(R.id.btnCorrect);</span>
+<span class="nc" id="L58">        incorrectButton = findViewById(R.id.btnIncorrect);</span>
+<span class="nc" id="L59">        navBar = findViewById(R.id.bottomNavigationView);</span>
+<span class="nc" id="L60">        topSessionInfo = findViewById(R.id.topSessionInfo);</span>
+<span class="nc" id="L61">        bottomSessionInfo = findViewById(R.id.bottomSessionInfo);</span>
+<span class="nc" id="L62">        progressText = findViewById(R.id.progressText);</span>
+
+<span class="nc" id="L64">        navBar.setSelectedItemId(R.id.nav_study);</span>
+<span class="nc" id="L65">        flashcardList = new ArrayList&lt;QuestionObject&gt;();</span>
+<span class="nc" id="L66">        isQuestion = true;</span>
+<span class="nc" id="L67">        isStart = false;</span>
+<span class="nc" id="L68">        isEnd = false;</span>
+<span class="nc" id="L69">        currentQuestionIndex = 0;</span>
+<span class="nc" id="L70">        QAtext.setText(&quot;&quot;);</span>
+<span class="nc" id="L71">        progressText.setText(&quot;&quot;);</span>
+<span class="nc" id="L72">        flashcardText.setText(&quot;Press start to begin!&quot;);</span>
+<span class="nc" id="L73">        seeAnswerButton.setText(&quot;Start&quot;);</span>
+<span class="nc" id="L74">        bottomSessionInfo.setText(bottomSessionInfo.getText() + &quot;\n&quot; + &quot;User 2&quot;);</span>
+
+<span class="nc" id="L76">        correctButton.setVisibility(View.INVISIBLE);</span>
+<span class="nc" id="L77">        incorrectButton.setVisibility(View.INVISIBLE);</span>
+<span class="nc" id="L78">        ArrayList&lt;String&gt; list = new ArrayList&lt;&gt;();</span>
+<span class="nc" id="L79">        list.add(&quot;Test&quot;);</span>
+<span class="nc" id="L80">        list.remove(&quot;Test&quot;);</span>
+<span class="nc" id="L81">        seeAnswerButton.setOnClickListener(new View.OnClickListener() {</span>
+            @Override
+            public void onClick(View view) {
+<span class="nc bnc" id="L84" title="All 2 branches missed.">                if (!isStart) {</span>
+<span class="nc" id="L85">                    WebSocketManager1.getInstance().sendMessage(&quot;start&quot;);</span>
+<span class="nc" id="L86">                    seeAnswerButton.setText(&quot;See answer&quot;);</span>
+<span class="nc bnc" id="L87" title="All 2 branches missed.">                } if (isEnd) {</span>
+<span class="nc" id="L88">                    Intent intent = new Intent(FlashcardsActivity.this, StudyActivity.class);</span>
+<span class="nc" id="L89">                    WebSocketManager1.getInstance().disconnectWebSocket(false);</span>
+<span class="nc" id="L90">                    intent.putExtra(&quot;USER&quot;, user);</span>
+<span class="nc" id="L91">                    startActivity(intent);</span>
+<span class="nc bnc" id="L92" title="All 2 branches missed.">                } else if (flashcardList.size() &gt; currentQuestionIndex) {</span>
+                    String side;
+<span class="nc bnc" id="L94" title="All 2 branches missed.">                    if (isQuestion) {</span>
+<span class="nc" id="L95">                        side = &quot;answer&quot;;</span>
+                    } else {
+<span class="nc" id="L97">                        side = &quot;question&quot;;</span>
+                    }
+<span class="nc" id="L99">                    WebSocketManager1.getInstance().sendMessage(&quot;flipCard/&quot; + flashcardList.get(currentQuestionIndex).getId() + &quot;/&quot; + side);</span>
+                }
+
+<span class="nc" id="L102">            }</span>
+        });
+<span class="nc" id="L104">        correctButton.setOnClickListener(new View.OnClickListener() {</span>
+            @Override
+            public void onClick(View view) {
+<span class="nc" id="L107">                WebSocketManager1.getInstance().sendMessage(&quot;question/&quot; + flashcardList.get(currentQuestionIndex).getId() + &quot;/correct&quot;);</span>
+<span class="nc" id="L108">                Log.i(&quot;StudySession&quot;, &quot;Sent: question/&quot; + flashcardList.get(currentQuestionIndex).getId() + &quot;/correct&quot;);</span>
+                // Send correct
+<span class="nc" id="L110">            }</span>
+        });
+
+<span class="nc" id="L113">        incorrectButton.setOnClickListener(new View.OnClickListener() {</span>
+            @Override
+            public void onClick(View view) {
+<span class="nc" id="L116">                WebSocketManager1.getInstance().sendMessage(&quot;question/&quot; + flashcardList.get(currentQuestionIndex).getId() + &quot;/incorrect&quot;);</span>
+<span class="nc" id="L117">                Log.i(&quot;StudySession&quot;, &quot;Sent: question/&quot; + flashcardList.get(currentQuestionIndex).getId() + &quot;/incorrect&quot;);</span>
+                // Send incorrect message
+                // question/qid/correct|incorrect
+<span class="nc" id="L120">            }</span>
+        });
+
+<span class="nc" id="L123">        navBar.setOnItemSelectedListener(item -&gt; {</span>
+            Intent intent;
+<span class="nc bnc" id="L125" title="All 6 branches missed.">            switch (item.getItemId()) {</span>
+                case R.id.nav_home:
+<span class="nc" id="L127">                    intent = new Intent(FlashcardsActivity.this, MainActivity.class);</span>
+<span class="nc" id="L128">                    intent.putExtra(&quot;USER&quot;, user);</span>
+<span class="nc" id="L129">                    WebSocketManager1.getInstance().disconnectWebSocket(false);</span>
+<span class="nc" id="L130">                    startActivity(intent);</span>
+<span class="nc" id="L131">                    break;</span>
+                case R.id.nav_edit:
+<span class="nc" id="L133">                    intent = new Intent(FlashcardsActivity.this, EditQuestionsActivity.class);</span>
+<span class="nc" id="L134">                    intent.putExtra(&quot;USER&quot;, user);</span>
+<span class="nc" id="L135">                    WebSocketManager1.getInstance().disconnectWebSocket(false);</span>
+<span class="nc" id="L136">                    startActivity(intent);</span>
+<span class="nc" id="L137">                    break;</span>
+                case R.id.nav_study:
+<span class="nc" id="L139">                    intent = new Intent(FlashcardsActivity.this, StudyActivity.class);</span>
+<span class="nc" id="L140">                    intent.putExtra(&quot;USER&quot;, user);</span>
+<span class="nc" id="L141">                    WebSocketManager1.getInstance().disconnectWebSocket(false);</span>
+<span class="nc" id="L142">                    startActivity(intent);</span>
+<span class="nc" id="L143">                    break;</span>
+                case R.id.nav_groups:
+<span class="nc" id="L145">                    intent = new Intent(FlashcardsActivity.this, GroupPageActivity.class);</span>
+<span class="nc" id="L146">                    intent.putExtra(&quot;USER&quot;, user);</span>
+<span class="nc" id="L147">                    WebSocketManager1.getInstance().disconnectWebSocket(false);</span>
+<span class="nc" id="L148">                    startActivity(intent);</span>
+<span class="nc" id="L149">                    break;</span>
+                case R.id.nav_chat:
+<span class="nc" id="L151">                    intent = new Intent(FlashcardsActivity.this, ChatActivity.class);</span>
+<span class="nc" id="L152">                    intent.putExtra(&quot;USER&quot;, user);</span>
+<span class="nc" id="L153">                    WebSocketManager1.getInstance().disconnectWebSocket(false);</span>
+<span class="nc" id="L154">                    startActivity(intent);</span>
+                    break;
+            }
+<span class="nc" id="L157">            return true;</span>
+        });
+
+
+<span class="nc" id="L161">    }</span>
+
+    private void endSession() {
+<span class="nc" id="L164">        QAtext.setText(&quot;Session end&quot;);</span>
+<span class="nc" id="L165">        isEnd = true;</span>
+<span class="nc" id="L166">        flashcardText.setText(&quot;You've completed these flashcards! Press back to study another category&quot;);</span>
+<span class="nc" id="L167">        correctButton.setVisibility(View.INVISIBLE);</span>
+<span class="nc" id="L168">        incorrectButton.setVisibility(View.INVISIBLE);</span>
+<span class="nc" id="L169">        seeAnswerButton.setText(&quot;Back&quot;);</span>
+<span class="nc" id="L170">        WebSocketManager1.getInstance().disconnectWebSocket(true);</span>
+<span class="nc" id="L171">    }</span>
+
+    private void setQuestion(int i, String side) {
+
+<span class="nc bnc" id="L175" title="All 2 branches missed.">        if (side.equals(&quot;question&quot;)) {</span>
+<span class="nc" id="L176">            isQuestion = true;</span>
+<span class="nc" id="L177">            QAtext.setText(&quot;Question&quot;);</span>
+<span class="nc bnc" id="L178" title="All 2 branches missed.">            if (i != currentQuestionIndex) {</span>
+<span class="nc" id="L179">                currentQuestionIndex = i;</span>
+<span class="nc" id="L180">                incorrectButton.setVisibility(View.INVISIBLE);</span>
+<span class="nc" id="L181">                correctButton.setVisibility(View.INVISIBLE);</span>
+<span class="nc" id="L182">                seeAnswerButton.setText(&quot;See answer&quot;);</span>
+            }
+<span class="nc" id="L184">            flashcardText.setText(flashcardList.get(currentQuestionIndex).getQuestion());</span>
+        } else {
+<span class="nc" id="L186">            isQuestion = false;</span>
+<span class="nc" id="L187">            QAtext.setText(&quot;Answer&quot;);</span>
+<span class="nc" id="L188">            seeAnswerButton.setText(&quot;Flip card&quot;);</span>
+<span class="nc" id="L189">            flashcardText.setText(flashcardList.get(currentQuestionIndex).getAnswer());</span>
+<span class="nc" id="L190">            incorrectButton.setVisibility(View.VISIBLE);</span>
+<span class="nc" id="L191">            correctButton.setVisibility(View.VISIBLE);</span>
+        }
+<span class="nc" id="L193">    }</span>
+
+    @Override
+    public void onWebSocketMessage(String message) {
+        /**
+         * In Android, all UI-related operations must be performed on the main UI thread
+         * to ensure smooth and responsive user interfaces. The 'runOnUiThread' method
+         * is used to post a runnable to the UI thread's message queue, allowing UI updates
+         * to occur safely from a background or non-UI thread.
+         */
+<span class="nc" id="L203">        runOnUiThread(() -&gt; {</span>
+            try {
+<span class="nc" id="L205">                JSONArray jsonArray = new JSONArray(message);</span>
+<span class="nc bnc" id="L206" title="All 2 branches missed.">                for (int i = 0; i &lt; jsonArray.length(); i++) {</span>
+<span class="nc" id="L207">                    parseMessage(jsonArray.getJSONObject(i));</span>
+                }
+<span class="nc" id="L209">            } catch (JSONException jsonException) {</span>
+<span class="nc" id="L210">                throw new RuntimeException(jsonException);</span>
+<span class="nc" id="L211">            }</span>
+<span class="nc" id="L212">        });</span>
+<span class="nc" id="L213">    }</span>
+
+    private void parseMessage(JSONObject message) {
+        try {
+<span class="nc bnc" id="L217" title="All 6 branches missed.">            switch (message.getString(&quot;type&quot;)) {</span>
+                case &quot;cardstate&quot;:
+<span class="nc" id="L219">                    setQuestion(message.getInt(&quot;question&quot;), message.getString(&quot;side&quot;));</span>
+<span class="nc" id="L220">                    return;</span>
+                case &quot;question&quot;:
+<span class="nc" id="L222">                    flashcardList.add(QuestionObject.getQuestionFromJSON(message));</span>
+<span class="nc" id="L223">                    return;</span>
+                case &quot;start&quot;:
+<span class="nc" id="L225">                    isStart = true;</span>
+<span class="nc" id="L226">                    setQuestion(0, &quot;question&quot;);</span>
+<span class="nc" id="L227">                    return;</span>
+                case &quot;updatecardstate&quot;:
+<span class="nc" id="L229">                    setQuestion(message.getInt(&quot;questionindex&quot;), message.getString(&quot;side&quot;));</span>
+<span class="nc" id="L230">                    return;</span>
+                case &quot;sessionended&quot;:
+<span class="nc" id="L232">                    endSession();</span>
+
+            }
+<span class="nc" id="L235">        } catch (JSONException jsonException) {</span>
+<span class="nc" id="L236">            throw new RuntimeException(&quot;Error with&quot; + message, jsonException);</span>
+<span class="nc" id="L237">        }</span>
+
+<span class="nc" id="L239">    }</span>
+
+    @Override
+    public void onWebSocketClose(int code, String reason, boolean remote) {
+<span class="nc" id="L243">    }</span>
+
+    @Override
+    public void onWebSocketOpen(ServerHandshake handshakedata) {
+<span class="nc" id="L247">    }</span>
+
+    @Override
+    public void onWebSocketError(Exception ex) {
+<span class="nc" id="L251">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span>Generated by the Android Gradle plugin 7.4.2</div></body></html>

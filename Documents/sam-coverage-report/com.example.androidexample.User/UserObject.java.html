@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>UserObject.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=0;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">debug</a> &gt; <a href="index.source.html" class="el_package">com.example.androidexample.User</a> &gt; <span class="el_source">UserObject.java</span></div><h1>UserObject.java</h1><pre class="source lang-java linenums">package com.example.androidexample.User;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.Serializable;
+import java.util.Objects;
+
+public class UserObject implements Serializable {
+    private String userName;
+    private String password;
+    private int groupID;
+    private long id;
+    private String joinDate, profilePicture;
+    private boolean admin, coach;
+
+<span class="fc" id="L17">    public UserObject(long id, String user, String pass) {</span>
+<span class="fc" id="L18">        this.id = id;</span>
+<span class="fc" id="L19">        userName = user;</span>
+<span class="fc" id="L20">        password = pass;</span>
+<span class="fc" id="L21">        groupID = 0;</span>
+<span class="fc" id="L22">        profilePicture = null;</span>
+<span class="fc" id="L23">        admin = false;</span>
+<span class="fc" id="L24">        coach = false;</span>
+<span class="fc" id="L25">    }</span>
+
+    public void joinGroup(int group) {
+<span class="fc" id="L28">        this.groupID = group;</span>
+<span class="fc" id="L29">    }</span>
+
+    public void leaveGroup() {
+<span class="nc" id="L32">        this.groupID = 0;</span>
+<span class="nc" id="L33">    }</span>
+
+    public int getGroupID() {
+<span class="fc" id="L36">        return groupID;</span>
+    }
+
+    public String getUserName() {
+<span class="fc" id="L40">        return userName;</span>
+    }
+
+    public String getPassword() {
+<span class="fc" id="L44">        return password;</span>
+    }
+
+    public void setId(int id) {
+<span class="nc" id="L48">        this.id = id;</span>
+<span class="nc" id="L49">    }</span>
+
+    public void setJoinDate(String s) {
+<span class="nc" id="L52">        joinDate = s;</span>
+<span class="nc" id="L53">    }</span>
+
+    public long getId() {
+<span class="fc" id="L56">        return id;</span>
+    }
+
+    public void setProfilePicture(String pic) {
+<span class="nc" id="L60">        profilePicture = pic;</span>
+<span class="nc" id="L61">    }</span>
+
+    public String getProfilePicture() {
+<span class="nc" id="L64">        return profilePicture;</span>
+    }
+
+    public boolean isAdmin() {
+<span class="fc" id="L68">        return admin;</span>
+    }
+
+    public void makeAdmin() {
+<span class="fc" id="L72">        admin = true;</span>
+<span class="fc" id="L73">    }</span>
+
+    public static UserObject getUserFromString(String string) throws JSONException {
+<span class="nc" id="L76">        return getUserFromJSON(new JSONObject(string));</span>
+    }
+
+    public static UserObject getUserFromJSON(JSONObject jsonObject) throws JSONException {
+<span class="fc" id="L80">        UserObject userObject = new UserObject(</span>
+<span class="fc" id="L81">                jsonObject.getInt(&quot;cid&quot;),</span>
+<span class="fc" id="L82">                jsonObject.getString(&quot;userName&quot;),</span>
+<span class="fc" id="L83">                jsonObject.getString(&quot;password&quot;));</span>
+        try {
+<span class="nc" id="L85">            String pic = jsonObject.getString(&quot;profileImage&quot;);</span>
+<span class="nc bnc" id="L86" title="All 2 branches missed.">            if (pic != null) {</span>
+<span class="nc" id="L87">                userObject.setProfilePicture(pic);</span>
+            }
+<span class="fc" id="L89">        } catch (JSONException e) {</span>
+<span class="nc" id="L90">        }</span>
+
+        try {
+<span class="fc" id="L93">            int gid = jsonObject.getJSONArray(&quot;teams&quot;).getJSONObject(0).getInt(&quot;tid&quot;);</span>
+<span class="fc" id="L94">            userObject.joinGroup(gid);</span>
+<span class="fc" id="L95">        } catch (JSONException e) {</span>
+<span class="fc" id="L96">        }</span>
+<span class="fc" id="L97">        return userObject;</span>
+    }
+
+    @Override
+    public boolean equals(Object o) {
+<span class="nc bnc" id="L102" title="All 2 branches missed.">        if (!(o instanceof UserObject)) return false;</span>
+<span class="nc bnc" id="L103" title="All 2 branches missed.">        return id == ((UserObject)o).id;</span>
+    }
+
+    @Override
+    public int hashCode() {
+<span class="nc" id="L108">        return Objects.hash(id);</span>
+    }
+
+<span class="nc" id="L111">    public void makeCoach(){coach = true;}</span>
+
+<span class="nc" id="L113">    public boolean isCoach(){return coach;}</span>
+
+<span class="nc" id="L115">    public void setPassword(String password) {this.password = password;}</span>
+
+<span class="nc" id="L117">    public void setUserName(String userName) {this.userName = userName;}</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span>Generated by the Android Gradle plugin 7.4.2</div></body></html>

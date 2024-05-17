@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>StringReqActivity.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=0;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">debug</a> &gt; <a href="index.source.html" class="el_package">com.example.androidexample.ToDelete</a> &gt; <span class="el_source">StringReqActivity.java</span></div><h1>StringReqActivity.java</h1><pre class="source lang-java linenums">package com.example.androidexample.ToDelete;
+
+import androidx.appcompat.app.AppCompatActivity;
+
+import android.os.Bundle;
+import android.util.Log;
+import android.view.View;
+import android.widget.Button;
+import android.widget.ProgressBar;
+import android.widget.TextView;
+
+import com.android.volley.Request;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
+import com.example.androidexample.R;
+import com.example.androidexample.Networking.VolleySingleton;
+
+import java.util.HashMap;
+import java.util.Map;
+
+<span class="nc" id="L22">public class StringReqActivity extends AppCompatActivity {</span>
+
+    private Button btnStringReq;
+    private TextView msgResponse, progressText;
+    private ProgressBar progressBar;
+
+    private static final String URL_STRING_REQ = &quot;https://jsonplaceholder.typicode.com/users/1&quot;;
+    //   public static final String URL_STRING_REQ = &quot;https://2aa87adf-ff7c-45c8-89bc-f3fbfaa16d15.mock.pstmn.io/users/1&quot;;
+    //   public static final String URL_STRING_REQ = MainActivity.serverAddress + &quot;/users/1&quot;;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+<span class="nc" id="L34">        super.onCreate(savedInstanceState);</span>
+<span class="nc" id="L35">        setContentView(R.layout.activity_string_req);</span>
+
+<span class="nc" id="L37">        btnStringReq = (Button) findViewById(R.id.btnStringReq);</span>
+<span class="nc" id="L38">        msgResponse = (TextView) findViewById(R.id.msgResponse);</span>
+<span class="nc" id="L39">        progressBar = findViewById(R.id.progress_bar);</span>
+<span class="nc" id="L40">        progressText = findViewById(R.id.progress_text);</span>
+<span class="nc" id="L41">        progressBar.setProgress(50);</span>
+<span class="nc" id="L42">        progressText.setText(&quot;50&quot;);</span>
+
+<span class="nc" id="L44">        btnStringReq.setOnClickListener(new View.OnClickListener() {</span>
+            @Override
+            public void onClick(View v) {
+<span class="nc" id="L47">                makeStringReq();</span>
+<span class="nc" id="L48">            }</span>
+        });
+<span class="nc" id="L50">    }</span>
+
+
+    /**
+     * Making string request
+     **/
+    private void makeStringReq() {
+
+<span class="nc" id="L58">        StringRequest stringRequest = new StringRequest(</span>
+                Request.Method.GET,
+                URL_STRING_REQ,
+<span class="nc" id="L61">                new Response.Listener&lt;String&gt;() {</span>
+                    @Override
+                    public void onResponse(String response) {
+                        // Handle the successful response here
+<span class="nc" id="L65">                        Log.d(&quot;Volley Response&quot;, response);</span>
+<span class="nc" id="L66">                        msgResponse.setText(response.toString());</span>
+<span class="nc" id="L67">                    }</span>
+                },
+<span class="nc" id="L69">                new Response.ErrorListener() {</span>
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        // Handle any errors that occur during the request
+<span class="nc" id="L73">                        Log.e(&quot;Volley Error&quot;, error.toString());</span>
+<span class="nc" id="L74">                    }</span>
+                }
+<span class="nc" id="L76">        ) {</span>
+            @Override
+            public Map&lt;String, String&gt; getHeaders() {
+<span class="nc" id="L79">                Map&lt;String, String&gt; headers = new HashMap&lt;&gt;();</span>
+//                headers.put(&quot;Authorization&quot;, &quot;Bearer YOUR_ACCESS_TOKEN&quot;);
+//                headers.put(&quot;Content-Type&quot;, &quot;application/json&quot;);
+<span class="nc" id="L82">                return headers;</span>
+            }
+
+            @Override
+            protected Map&lt;String, String&gt; getParams() {
+<span class="nc" id="L87">                Map&lt;String, String&gt; params = new HashMap&lt;&gt;();</span>
+//                params.put(&quot;param1&quot;, &quot;value1&quot;);
+//                params.put(&quot;param2&quot;, &quot;value2&quot;);
+<span class="nc" id="L90">                return params;</span>
+            }
+        };
+
+        // Adding request to request queue
+<span class="nc" id="L95">        VolleySingleton.getInstance(getApplicationContext()).addToRequestQueue(stringRequest);</span>
+<span class="nc" id="L96">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span>Generated by the Android Gradle plugin 7.4.2</div></body></html>

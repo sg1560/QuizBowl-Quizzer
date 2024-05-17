@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    tools:context=".EditQuestions.QuestionAdder"
+    android:orientation="vertical">
+
+    <!-- TODO: Update blank fragment layout -->
+    <TextView
+        android:id="@+id/questionAdderTitle"
+        style="@style/TextAppearance.AppCompat.Title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="20dp"
+        android:text="New Question"
+        android:textColor="@color/text_dark_blue" />
+
+    <com.google.android.material.textfield.TextInputLayout
+        style="@style/Widget.Material3.TextInputLayout.OutlinedBox.Dense"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginVertical="10dp"
+        android:layout_marginHorizontal="20dp">
+        <com.google.android.material.textfield.TextInputEditText
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/question"
+            android:hint="Question">
+
+        </com.google.android.material.textfield.TextInputEditText>
+    </com.google.android.material.textfield.TextInputLayout>
+    <com.google.android.material.textfield.TextInputLayout
+        style="@style/Widget.Material3.TextInputLayout.OutlinedBox.Dense"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="10dp"
+        android:layout_marginHorizontal="20dp">
+        <com.google.android.material.textfield.TextInputEditText
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/answer"
+            android:hint="Answer">
+
+        </com.google.android.material.textfield.TextInputEditText>
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <RadioGroup
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginHorizontal="20dp"
+        >
+        <RadioButton
+            android:id="@+id/radioGeography"
+            android:layout_height="match_parent"
+            android:layout_width="match_parent"
+            android:layout_marginRight="10dp"
+            android:text="Geography"/>
+        <RadioButton
+            android:id="@+id/radioFineArts"
+            android:layout_height="match_parent"
+            android:layout_width="match_parent"
+            android:text="Fine Arts"/>
+        <RadioButton
+            android:id="@+id/radioScience"
+            android:layout_width="match_parent"
+            android:layout_marginRight="10dp"
+            android:text="Science"
+            android:layout_height="wrap_content"/>
+
+        <RadioButton
+            android:id="@+id/radioHistory"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginRight="10dp"
+            android:text="History" />
+
+        <RadioButton
+            android:id="@+id/radioPopCulture"
+            android:layout_height="match_parent"
+            android:layout_width="match_parent"
+            android:text="Pop culture"/>
+    </RadioGroup>
+
+    <TextView
+        android:id="@+id/errorMessage"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="25dp"
+        android:layout_marginBottom="5dp"
+        android:text="Please fill out both fields"
+        android:textColor="#9F0B0B">
+
+    </TextView>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="10dp">
+
+        <Button
+            android:id="@+id/btnSave"
+            android:layout_width="150dp"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="30dp"
+            android:layout_marginRight="20dp"
+            android:backgroundTint="@color/button_blue"
+            android:text="Save"
+            android:textColor="#FFFFFF">
+
+        </Button>
+        <Button
+            android:id="@+id/btnDelete"
+            android:layout_width="161dp"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="20dp"
+            android:backgroundTint="@color/button_blue"
+            android:text="Delete"
+            android:textColor="#FFFFFF">
+
+        </Button>
+    </LinearLayout>
+</LinearLayout>

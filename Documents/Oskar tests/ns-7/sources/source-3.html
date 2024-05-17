@@ -1,0 +1,240 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=windows-1252"> 
+  <title>Coverage Report > ClientQuestionController</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.QuizBowl.users</a>
+</div>
+
+<h1>Coverage Summary for Class: ClientQuestionController (com.QuizBowl.users)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">ClientQuestionController</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    50%
+  </span>
+  <span class="absValue">
+    (4/8)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    34.4%
+  </span>
+  <span class="absValue">
+    (21/61)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package com.QuizBowl.users;
+&nbsp;
+&nbsp;import com.QuizBowl.questions.*;
+&nbsp;import org.springframework.beans.factory.annotation.Autowired;
+&nbsp;import org.springframework.web.bind.annotation.*;
+&nbsp;
+&nbsp;import java.util.List;
+&nbsp;import java.util.Optional;
+&nbsp;
+&nbsp;@RestController
+<b class="fc">&nbsp;public class ClientQuestionController {</b>
+&nbsp;
+&nbsp;    @Autowired
+&nbsp;    UserRepository userRepository;
+&nbsp;
+&nbsp;    @Autowired
+&nbsp;    QuestionController questionController;
+&nbsp;
+&nbsp;    @Autowired
+&nbsp;    CategoryController categoryController;
+&nbsp;
+&nbsp;    @Autowired
+&nbsp;    ClientQuestionRepository questionHistoryRepository;
+&nbsp;
+&nbsp;    //region getMappings
+&nbsp;
+&nbsp;    @GetMapping(&quot;users/getbyid/{cid}/getquestionhistory/{qid}&quot;)
+&nbsp;    public ClientQuestionHistory getUserQuestionHistory(@PathVariable long cid, @PathVariable long qid) {
+<b class="fc">&nbsp;        return questionHistoryRepository.getClientQuestion(cid, qid);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @GetMapping(&quot;users/getbyid/{cid}/getalluserquestionhistory&quot;)
+&nbsp;    public List&lt;ClientQuestionHistory&gt; getAllUserQuestionHistory(@PathVariable long cid) {
+<b class="nc">&nbsp;        Client client = userRepository.findById(cid).orElseThrow();</b>
+<b class="nc">&nbsp;        return client.getClientQuestionHistory().stream().toList();</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @GetMapping(&quot;users/getbyid/{cid}/getquestionhistorystatistics&quot;)
+&nbsp;    public double getUserQuestionHistoryStatistics(@PathVariable long cid, @RequestParam(&quot;category&quot;) Optional&lt;Long&gt; catid) {
+<b class="nc">&nbsp;        Client client = userRepository.findById(cid).orElseThrow();</b>
+&nbsp;        List&lt;ClientQuestionHistory&gt; questionHistoryList;
+<b class="nc">&nbsp;        if (catid.isPresent()) {</b>
+<b class="nc">&nbsp;            Category category = categoryController.getCategoryById(catid.get());</b>
+<b class="nc">&nbsp;            questionHistoryList = client.getClientQuestionHistory().stream().filter((h) -&gt; h.getQuestion().getCategory().getId() == category.getId()).toList();</b>
+<b class="nc">&nbsp;        } else {</b>
+<b class="nc">&nbsp;            questionHistoryList = client.getClientQuestionHistory().stream().toList();</b>
+&nbsp;        }
+<b class="nc">&nbsp;        long correctCount = 0;</b>
+<b class="nc">&nbsp;        long incorrectCount = 0;</b>
+<b class="nc">&nbsp;        for (ClientQuestionHistory clientQuestionHistory : questionHistoryList) {</b>
+<b class="nc">&nbsp;            if (clientQuestionHistory.getCorrectAnswers() &gt; clientQuestionHistory.getIncorrectAnswers())</b>
+<b class="nc">&nbsp;                correctCount++;</b>
+<b class="nc">&nbsp;            else incorrectCount++;</b>
+<b class="nc">&nbsp;        }</b>
+<b class="nc">&nbsp;        return (double) correctCount / (correctCount + incorrectCount);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @GetMapping(&quot;users/getbyid/{cid}/getquestioncorrectpercentage&quot;)
+&nbsp;    public double getUserQuestionCorrectPercentage(@PathVariable long cid, @RequestParam(&quot;category&quot;) Optional&lt;Long&gt; catid) {
+<b class="nc">&nbsp;        Client client = userRepository.findById(cid).orElseThrow();</b>
+&nbsp;        List&lt;ClientQuestionHistory&gt; questionHistoryList;
+<b class="nc">&nbsp;        if (catid.isPresent()) {</b>
+<b class="nc">&nbsp;            Category category = categoryController.getCategoryById(catid.get());</b>
+<b class="nc">&nbsp;            questionHistoryList = client.getClientQuestionHistory().stream().filter((h) -&gt; h.getQuestion().getCategory().getId() == category.getId()).toList();</b>
+<b class="nc">&nbsp;        } else {</b>
+<b class="nc">&nbsp;            questionHistoryList = client.getClientQuestionHistory().stream().toList();</b>
+&nbsp;        }
+<b class="nc">&nbsp;        long correctPoints = 0;</b>
+<b class="nc">&nbsp;        long incorrectPoints = 0;</b>
+<b class="nc">&nbsp;        for (ClientQuestionHistory clientQuestionHistory : questionHistoryList) {</b>
+<b class="nc">&nbsp;            long points = clientQuestionHistory.getQuestion().getPoints();</b>
+<b class="nc">&nbsp;            if (clientQuestionHistory.getCorrectAnswers() &gt; clientQuestionHistory.getIncorrectAnswers())</b>
+<b class="nc">&nbsp;                correctPoints += points;</b>
+<b class="nc">&nbsp;            else incorrectPoints += points;</b>
+<b class="nc">&nbsp;        }</b>
+<b class="nc">&nbsp;        return (double) correctPoints / (correctPoints + incorrectPoints);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    //endregion
+&nbsp;
+&nbsp;    //region putMappings
+&nbsp;    @PutMapping(&quot;users/getbyid/{cid}/savequestioncorrect/{qid}&quot;)
+&nbsp;    public void addUserQuestionCorrect(@PathVariable long cid, @PathVariable long qid) {
+<b class="fc">&nbsp;        Client client = userRepository.findById(cid).orElseThrow();</b>
+<b class="fc">&nbsp;        Question question = questionController.getQuestionById(qid);</b>
+<b class="fc">&nbsp;        ClientQuestionHistory questionHistory = questionHistoryRepository.getClientQuestion(cid, qid);</b>
+<b class="fc">&nbsp;        if (questionHistory == null) {</b>
+<b class="fc">&nbsp;            questionHistory = new ClientQuestionHistory(client, question);</b>
+<b class="fc">&nbsp;            client.addQuestionHistory(questionHistory);</b>
+&nbsp;        }
+<b class="fc">&nbsp;        questionHistory.addCorrectAnswer();</b>
+<b class="fc">&nbsp;        questionHistoryRepository.save(questionHistory);</b>
+<b class="fc">&nbsp;        client.addTotalPoints(question.getPoints());</b>
+<b class="fc">&nbsp;        userRepository.save(client);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @PutMapping(&quot;users/getbyid/{cid}/savequestionincorrect/{qid}&quot;)
+&nbsp;    public void addUserQuestionInorrect(@PathVariable long cid, @PathVariable long qid) {
+<b class="fc">&nbsp;        Client client = userRepository.findById(cid).orElseThrow();</b>
+<b class="fc">&nbsp;        Question question = questionController.getQuestionById(qid);</b>
+<b class="fc">&nbsp;        ClientQuestionHistory questionHistory = questionHistoryRepository.getClientQuestion(cid, qid);</b>
+<b class="fc">&nbsp;        if (questionHistory == null) {</b>
+<b class="fc">&nbsp;            questionHistory = new ClientQuestionHistory(client, question);</b>
+<b class="fc">&nbsp;            client.addQuestionHistory(questionHistory);</b>
+&nbsp;        }
+<b class="fc">&nbsp;        questionHistory.addIncorrectAnswer();</b>
+<b class="fc">&nbsp;        questionHistoryRepository.save(questionHistory);</b>
+<b class="fc">&nbsp;        userRepository.save(client);</b>
+&nbsp;    }
+&nbsp;    //endregion
+&nbsp;
+&nbsp;    //region deleteMappings
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Delete all the clients QuestionHistory related to the specified category.
+&nbsp;     * If no category was given it will delete the history of all categories.
+&nbsp;     *
+&nbsp;     * @param cid   the client of which to delete the history from
+&nbsp;     * @param catid the category of which to delete the history from, leave out to delete from every category
+&nbsp;     */
+&nbsp;    @DeleteMapping(&quot;users/getbyid/{cid}/deletequestionhistory&quot;)
+&nbsp;    public void deleteUserQuestionHistory(@PathVariable long cid, @RequestParam(&quot;category&quot;) Optional&lt;Long&gt; catid) {
+<b class="nc">&nbsp;        Client client = userRepository.findById(cid).orElseThrow();</b>
+&nbsp;        List&lt;ClientQuestionHistory&gt; toRemove;
+<b class="nc">&nbsp;        if (catid.isPresent()) {</b>
+<b class="nc">&nbsp;            Category category = categoryController.getCategoryById(catid.get());</b>
+<b class="nc">&nbsp;            toRemove = client.getClientQuestionHistory().stream().filter((h) -&gt; h.getQuestion().getCategory().getId() == category.getId()).toList();</b>
+<b class="nc">&nbsp;        } else {</b>
+<b class="nc">&nbsp;            toRemove = client.getClientQuestionHistory().stream().toList();</b>
+&nbsp;        }
+<b class="nc">&nbsp;        toRemove.forEach(client::removeQuestionHistory);</b>
+<b class="nc">&nbsp;        questionHistoryRepository.deleteAll(toRemove);</b>
+<b class="nc">&nbsp;        userRepository.save(client);</b>
+&nbsp;    }
+&nbsp;    //endregion
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2024-04-26 22:45</div>
+</div>
+</body>
+</html>

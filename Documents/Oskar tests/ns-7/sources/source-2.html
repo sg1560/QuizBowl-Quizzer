@@ -1,0 +1,240 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=windows-1252"> 
+  <title>Coverage Report > ClientController</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.QuizBowl.users</a>
+</div>
+
+<h1>Coverage Summary for Class: ClientController (com.QuizBowl.users)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">ClientController</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (11/11)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    92.2%
+  </span>
+  <span class="absValue">
+    (47/51)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package com.QuizBowl.users;
+&nbsp;
+&nbsp;import com.QuizBowl.admin.AdminController;
+&nbsp;import com.QuizBowl.admin.AdminRepository;
+&nbsp;import com.QuizBowl.questions.*;
+&nbsp;import org.springframework.beans.factory.annotation.Autowired;
+&nbsp;import org.springframework.web.bind.annotation.*;
+&nbsp;
+&nbsp;import java.util.List;
+&nbsp;import java.util.Objects;
+&nbsp;import java.util.Set;
+&nbsp;
+&nbsp;@RestController
+<b class="fc">&nbsp;public class ClientController {</b>
+&nbsp;    @Autowired
+&nbsp;    UserRepository userRepository;
+&nbsp;
+&nbsp;    @Autowired
+&nbsp;    QuestionRepository questionRepository;
+&nbsp;
+&nbsp;    @Autowired
+&nbsp;    TeamRepository teamRepository;
+&nbsp;
+&nbsp;    @Autowired
+&nbsp;    CategoryRepository categoryRepository;
+&nbsp;
+&nbsp;    @Autowired
+&nbsp;    ClientQuestionRepository clientQuestionRepository;
+&nbsp;
+&nbsp;    @Autowired
+&nbsp;    AdminRepository adminRepository;
+&nbsp;
+&nbsp;    @Autowired
+&nbsp;    ProfileImageRepository profileImageRepository;
+&nbsp;
+&nbsp;    //region getMappings
+&nbsp;    @GetMapping(&quot;users/getbyid/{id}&quot;)
+&nbsp;    public Client getUserById(@PathVariable long id) {
+<b class="fc">&nbsp;        return userRepository.findById(id).orElse(null);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @GetMapping(&quot;users/login&quot;)
+&nbsp;    public Client getUserByLogin(@RequestParam String username, @RequestParam String password) {
+<b class="fc">&nbsp;        Client client = userRepository.getClientLogin(username, password);</b>
+<b class="fc">&nbsp;        return client;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @GetMapping(&quot;users/getall&quot;)
+&nbsp;    public List&lt;Client&gt; getAllUsers() {
+<b class="fc">&nbsp;        return userRepository.findAll();</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @GetMapping(&quot;users/getQuestions/{cid}&quot;)
+&nbsp;    public Set&lt;Question&gt; getQuestionsforClient(@PathVariable long cid) {
+<b class="fc">&nbsp;        Client c = userRepository.findById(cid).orElseThrow();</b>
+<b class="fc">&nbsp;        return c.getQuestionSet();</b>
+&nbsp;    }
+&nbsp;    //endregion
+&nbsp;
+&nbsp;    //region postMappings
+&nbsp;    @PostMapping(&quot;users/post/{name}&quot;)
+&nbsp;    public Client postUser(@PathVariable String name, @RequestParam String password) {
+<b class="fc">&nbsp;        Client newUser = new Client(name, password);</b>
+<b class="fc">&nbsp;        userRepository.save(newUser);</b>
+<b class="fc">&nbsp;        return newUser;</b>
+&nbsp;    }
+&nbsp;    //endregion
+&nbsp;
+&nbsp;    //region putMappings
+&nbsp;    @PutMapping(&quot;users/rename&quot;)
+&nbsp;    public Client renameUser(@RequestParam String username, @RequestParam String password, @RequestParam String newusername) {
+<b class="fc">&nbsp;        Client client = userRepository.getClientLogin(username, password);</b>
+<b class="fc">&nbsp;        client.setUserName(newusername);</b>
+<b class="fc">&nbsp;        userRepository.save(client);</b>
+<b class="fc">&nbsp;        return client;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @PutMapping(&quot;users/changepassword&quot;)
+&nbsp;    public Client changeUserPassword(@RequestParam String username, @RequestParam String password, @RequestParam String newpassword) {
+<b class="fc">&nbsp;        Client client = userRepository.getClientLogin(username, password);</b>
+<b class="fc">&nbsp;        client.setPassword(newpassword);</b>
+<b class="fc">&nbsp;        userRepository.save(client);</b>
+<b class="fc">&nbsp;        return client;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @PutMapping(&quot;users/getbyid/{id}/addpoints/{points}&quot;)
+&nbsp;    public void addUserPoints(@PathVariable long id, @PathVariable long points) {
+<b class="fc">&nbsp;        Client client = userRepository.findById(id).orElseThrow();</b>
+<b class="fc">&nbsp;        client.addTotalPoints(points);</b>
+<b class="fc">&nbsp;        userRepository.save(client);</b>
+&nbsp;    }
+&nbsp;    //endregion
+&nbsp;
+&nbsp;    //region deleteMappings
+&nbsp;    @DeleteMapping(&quot;users/deletebyid/{id}&quot;)
+&nbsp;    public Client deleteUserById(@PathVariable long id) {
+<b class="fc">&nbsp;        Client client = userRepository.findById(id).orElseThrow();</b>
+<b class="fc">&nbsp;        for (Team team : client.getTeams().stream().map((t) -&gt; teamRepository.findById(t.getTid()).get()).toList()) {</b>
+<b class="nc">&nbsp;            team.removeMember(client);</b>
+<b class="nc">&nbsp;            teamRepository.save(team);</b>
+<b class="nc">&nbsp;        }</b>
+<b class="fc">&nbsp;        List&lt;Question&gt; questionList = client.getQuestionSet().stream().map((q) -&gt; questionRepository.findById(q.getId()).get()).toList();</b>
+<b class="fc">&nbsp;        questionList.forEach(client::removeQuestion);</b>
+<b class="fc">&nbsp;        userRepository.save(client);</b>
+<b class="fc">&nbsp;        for (Question question : questionList) {</b>
+<b class="fc">&nbsp;            Category category = categoryRepository.findById((long)question.getCategory().getId()).get();</b>
+<b class="fc">&nbsp;            category.removeQuestion(question);</b>
+<b class="fc">&nbsp;            categoryRepository.save(category);</b>
+<b class="fc">&nbsp;            questionRepository.deleteById(question.getId());</b>
+<b class="fc">&nbsp;        }</b>
+<b class="fc">&nbsp;        Set&lt;ClientQuestionHistory&gt; clientQuestionHistoryList = client.getClientQuestionHistory();</b>
+<b class="fc">&nbsp;        clientQuestionHistoryList.forEach(client::removeQuestionHistory);</b>
+<b class="fc">&nbsp;        userRepository.save(client);</b>
+<b class="fc">&nbsp;        clientQuestionRepository.deleteAll(clientQuestionHistoryList);</b>
+&nbsp;
+<b class="fc">&nbsp;        ProfileImage profileImage = client.getProfileImage();</b>
+<b class="fc">&nbsp;        client.setProfileImage(null);</b>
+<b class="fc">&nbsp;        userRepository.save(client);</b>
+<b class="fc">&nbsp;        if (profileImage != null) {</b>
+<b class="nc">&nbsp;            profileImageRepository.deleteById(profileImage.getIid());</b>
+&nbsp;        }
+<b class="fc">&nbsp;        userRepository.delete(client);</b>
+<b class="fc">&nbsp;        return client;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @DeleteMapping(&quot;users/deleteall&quot;)
+&nbsp;    public List&lt;Client&gt; deleteAllUsers() {
+<b class="fc">&nbsp;        List&lt;Client&gt; clients = userRepository.findAll();</b>
+<b class="fc">&nbsp;        for (var client : clients) {</b>
+<b class="fc">&nbsp;            deleteUserById(client.getCid());</b>
+<b class="fc">&nbsp;        }</b>
+<b class="fc">&nbsp;        return clients;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    //endregion
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2024-04-26 22:45</div>
+</div>
+</body>
+</html>

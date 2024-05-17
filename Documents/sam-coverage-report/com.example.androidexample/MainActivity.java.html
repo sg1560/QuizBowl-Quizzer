@@ -1,0 +1,390 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>MainActivity.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=0;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">debug</a> &gt; <a href="index.source.html" class="el_package">com.example.androidexample</a> &gt; <span class="el_source">MainActivity.java</span></div><h1>MainActivity.java</h1><pre class="source lang-java linenums">package com.example.androidexample;
+
+import android.content.Intent;
+import android.graphics.Bitmap;
+import android.os.Bundle;
+import android.util.Log;
+import android.view.View;
+import android.widget.Button;
+import android.widget.ImageButton;
+import android.widget.ImageView;
+import android.widget.ProgressBar;
+import android.widget.TextView;
+
+import androidx.appcompat.app.AppCompatActivity;
+
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.ImageRequest;
+import com.android.volley.toolbox.JsonArrayRequest;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
+import com.example.androidexample.Admin.AdminActivity;
+import com.example.androidexample.EditQuestions.EditQuestionsActivity;
+import com.example.androidexample.Chat.ChatActivity;
+import com.example.androidexample.Groups.GroupPageActivity;
+import com.example.androidexample.Login.LoginPageActivity;
+import com.example.androidexample.Networking.VolleySingleton;
+import com.example.androidexample.Networking.VolleySingleton2;
+import com.example.androidexample.Networking.WebSocketManager1;
+import com.example.androidexample.Study.StudyActivity;
+import com.example.androidexample.User.ShowAllUsersActivity;
+import com.example.androidexample.User.UserObject;
+import com.example.androidexample.User.UserProfilePicActivity;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.Serializable;
+import java.io.UnsupportedEncodingException;
+import java.util.HashMap;
+import java.util.Map;
+
+<span class="fc" id="L48">public class MainActivity extends AppCompatActivity implements View.OnClickListener, Serializable {</span>
+
+    private ProgressBar totalProgress, sciProgress, histProgress, popProgress, fineArtProgress, geoProgress;
+    private Button showAllUsers, deleteUser, adminCreate, admin;
+    private BottomNavigationView navBar;
+    private TextView totalProgressText, hello, sciProgressText, histProgressText, popProgressText, fineArtProgressText, geoProgressText;
+<span class="fc" id="L54">    private final String URL_END = &quot;/getquestioncorrectpercentage?category=&quot;;</span>
+
+<span class="fc" id="L56">    private final String URL_END_2 = &quot;/getquestioncorrectpercentage&quot;;</span>
+    /**
+     * The address of the target server for http, please only change this one variable
+     */
+    public static final String httpServerAddress = &quot;http://coms-309-030.class.las.iastate.edu:8080&quot;;
+    /**
+     * The address of the target server for https, please only change this one variable
+     */
+    public static final String wsServerAddress = &quot;ws://coms-309-030.class.las.iastate.edu:8080&quot;;
+    //http://coms-309-030.class.las.iastate.edu:8080
+    //http://10.0.2.2:8080 for local server not in android VM
+    //&quot;ws://10.0.2.2:8080&quot;;
+<span class="fc" id="L68">    private final String URL_BASE = &quot;/users/getbyid/&quot;;</span>
+
+
+    private UserObject user;
+
+    private ImageButton profilePicture;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+<span class="fc" id="L77">        super.onCreate(savedInstanceState);</span>
+<span class="fc" id="L78">        setContentView(R.layout.activity_main);</span>
+<span class="fc" id="L79">        user = (UserObject) getIntent().getSerializableExtra(&quot;USER&quot;);</span>
+<span class="fc" id="L80">        RequestQueue queue = Volley.newRequestQueue(this);</span>
+
+
+<span class="fc" id="L83">        hello = findViewById(R.id.greeting);</span>
+<span class="fc" id="L84">        showAllUsers = findViewById(R.id.showUsers);</span>
+<span class="fc" id="L85">        deleteUser = findViewById(R.id.deleteUser);</span>
+<span class="fc" id="L86">        admin = findViewById(R.id.adminButton);</span>
+<span class="fc" id="L87">        adminCreate = findViewById(R.id.makeAdminButton);</span>
+
+<span class="fc" id="L89">        sciProgress = findViewById(R.id.sciProgressBar);</span>
+<span class="fc" id="L90">        histProgress = findViewById(R.id.historyProgressBar);</span>
+<span class="fc" id="L91">        popProgress = findViewById(R.id.popProgressBar);</span>
+<span class="fc" id="L92">        fineArtProgress = findViewById(R.id.fineArtProgressBar);</span>
+<span class="fc" id="L93">        geoProgress = findViewById(R.id.geoProgressBar);</span>
+<span class="fc" id="L94">        totalProgress = findViewById(R.id.totalProgressBar);</span>
+
+<span class="fc" id="L96">        sciProgressText = findViewById(R.id.sciProgressText);</span>
+<span class="fc" id="L97">        histProgressText = findViewById(R.id.historyProgressText);</span>
+<span class="fc" id="L98">        popProgressText = findViewById(R.id.popProgressText);</span>
+<span class="fc" id="L99">        fineArtProgressText = findViewById(R.id.fineArtProgressText);</span>
+<span class="fc" id="L100">        geoProgressText = findViewById(R.id.geoProgressText);</span>
+<span class="fc" id="L101">        totalProgressText = findViewById(R.id.totalProgressText);</span>
+
+<span class="fc" id="L103">        profilePicture = findViewById(R.id.profilePicture);</span>
+<span class="fc" id="L104">        navBar = findViewById(R.id.bottomNavigationView);</span>
+
+
+<span class="fc" id="L107">        hello.append(user.getUserName() + &quot;!&quot;);</span>
+
+        /* button click listeners */
+<span class="fc" id="L110">        showAllUsers.setOnClickListener(this);</span>
+<span class="fc" id="L111">        deleteUser.setOnClickListener(this);</span>
+<span class="fc" id="L112">        profilePicture.setOnClickListener(this);</span>
+<span class="fc" id="L113">        admin.setOnClickListener(this);</span>
+<span class="fc" id="L114">        adminCreate.setOnClickListener(this);</span>
+<span class="fc" id="L115">        navBar.setSelectedItemId(R.id.nav_home);</span>
+
+<span class="fc" id="L117">        makeImageRequest();</span>
+
+<span class="fc" id="L119">        navBar.setOnItemSelectedListener(item -&gt; {</span>
+            Intent intent;
+<span class="pc bpc" id="L121" title="2 of 6 branches missed.">            switch (item.getItemId()) {</span>
+                case R.id.nav_home:
+<span class="nc" id="L123">                    break;</span>
+                case R.id.nav_edit:
+<span class="fc" id="L125">                    intent = new Intent(MainActivity.this, EditQuestionsActivity.class);</span>
+<span class="fc" id="L126">                    intent.putExtra(&quot;USER&quot;, user);</span>
+<span class="fc" id="L127">                    startActivity(intent);</span>
+<span class="fc" id="L128">                    break;</span>
+                case R.id.nav_study:
+<span class="fc" id="L130">                    intent = new Intent(MainActivity.this, StudyActivity.class);</span>
+<span class="fc" id="L131">                    intent.putExtra(&quot;USER&quot;, user);</span>
+<span class="fc" id="L132">                    startActivity(intent);</span>
+<span class="fc" id="L133">                    break;</span>
+                case R.id.nav_groups:
+<span class="fc" id="L135">                    intent = new Intent(MainActivity.this, GroupPageActivity.class);</span>
+<span class="fc" id="L136">                    intent.putExtra(&quot;USER&quot;, user);</span>
+<span class="fc" id="L137">                    startActivity(intent);</span>
+<span class="fc" id="L138">                    break;</span>
+                case R.id.nav_chat:
+<span class="fc" id="L140">                    intent = new Intent(MainActivity.this, ChatActivity.class);</span>
+<span class="fc" id="L141">                    intent.putExtra(&quot;USER&quot;, user);</span>
+<span class="fc" id="L142">                    startActivity(intent);</span>
+                    break;
+            }
+<span class="fc" id="L145">            return true;</span>
+        });
+
+<span class="fc" id="L148">        String newUrl = MainActivity.httpServerAddress + &quot;/admin/getAllAdmin&quot;;</span>
+<span class="fc" id="L149">        JsonArrayRequest request1 = new JsonArrayRequest(Request.Method.GET, newUrl, null, new Response.Listener&lt;JSONArray&gt;() {</span>
+            @Override
+            public void onResponse(JSONArray jsonArray) {
+<span class="fc bfc" id="L152" title="All 2 branches covered.">                for (int i = 0; i &lt; jsonArray.length(); i++) {</span>
+                    try {
+<span class="fc" id="L154">                        JSONObject object = jsonArray.getJSONObject(i);</span>
+<span class="fc bfc" id="L155" title="All 2 branches covered.">                        if (user.getUserName().equals(object.getString(&quot;name&quot;))) {</span>
+<span class="fc" id="L156">                            user.makeAdmin();</span>
+<span class="fc" id="L157">                            break;</span>
+                        }
+<span class="nc" id="L159">                    } catch (JSONException e) {</span>
+<span class="nc" id="L160">                        throw new RuntimeException(e);</span>
+<span class="fc" id="L161">                    }</span>
+                }
+<span class="fc bfc" id="L163" title="All 2 branches covered.">                if (user.isAdmin()) {</span>
+<span class="fc" id="L164">                    admin.setVisibility(View.VISIBLE);</span>
+                } else {
+<span class="fc" id="L166">                    admin.setVisibility(View.INVISIBLE);</span>
+                }
+<span class="fc" id="L168">            }</span>
+<span class="fc" id="L169">        }, new Response.ErrorListener() {</span>
+            @Override
+            public void onErrorResponse(VolleyError volleyError) {
+
+<span class="nc" id="L173">            }</span>
+        });
+<span class="fc" id="L175">        queue.add(request1);</span>
+
+<span class="fc" id="L177">        makeStringReq(getCategoryId(&quot;Science&quot;));</span>
+<span class="fc" id="L178">        makeStringReq(getCategoryId(&quot;Geography&quot;));</span>
+
+<span class="fc" id="L180">        makeStringReq(getCategoryId(&quot;Fine Arts&quot;));</span>
+<span class="fc" id="L181">        makeStringReq(getCategoryId(&quot;Pop Culture&quot;));</span>
+<span class="fc" id="L182">        makeStringReq(getCategoryId(&quot;History&quot;));</span>
+<span class="fc" id="L183">        makeStringReq(0);</span>
+
+<span class="fc" id="L185">    }</span>
+
+    private void handleResponse(String accuracy, long category) {
+        float f;
+        int acc;
+<span class="pc bpc" id="L190" title="1 of 2 branches missed.">        if (!accuracy.equals(&quot;\&quot;NaN\&quot;&quot;)) {</span>
+<span class="nc bnc" id="L191" title="All 2 branches missed.">            if (category == getCategoryId(&quot;Science&quot;)) {</span>
+<span class="nc" id="L192">                f = Float.parseFloat(accuracy);</span>
+<span class="nc" id="L193">                acc = (int) f * 100;</span>
+<span class="nc" id="L194">                sciProgressText.setText(acc + &quot;%&quot;);</span>
+<span class="nc" id="L195">                sciProgress.setProgress(acc);</span>
+<span class="nc bnc" id="L196" title="All 2 branches missed.">            } else if (category == getCategoryId(&quot;Geography&quot;)) {</span>
+<span class="nc" id="L197">                f = Float.parseFloat(accuracy);</span>
+<span class="nc" id="L198">                acc = (int) (f * 100);</span>
+<span class="nc" id="L199">                geoProgressText.setText(acc + &quot;%&quot;);</span>
+<span class="nc" id="L200">                geoProgress.setProgress(acc);</span>
+<span class="nc bnc" id="L201" title="All 2 branches missed.">            } else if (category == getCategoryId(&quot;Pop Culture&quot;)) {</span>
+<span class="nc" id="L202">                f = Float.parseFloat(accuracy);</span>
+<span class="nc" id="L203">                acc = (int) (f * 100);</span>
+<span class="nc" id="L204">                popProgressText.setText(acc + &quot;%&quot;);</span>
+<span class="nc" id="L205">                popProgress.setProgress(acc);</span>
+<span class="nc bnc" id="L206" title="All 2 branches missed.">            } else if (category == getCategoryId(&quot;Fine Arts&quot;)) {</span>
+<span class="nc" id="L207">                f = Float.parseFloat(accuracy);</span>
+<span class="nc" id="L208">                acc = (int) (f * 100);</span>
+<span class="nc" id="L209">                fineArtProgressText.setText(acc + &quot;%&quot;);</span>
+<span class="nc" id="L210">                fineArtProgress.setProgress(acc);</span>
+<span class="nc bnc" id="L211" title="All 2 branches missed.">            } else if (category == getCategoryId(&quot;History&quot;)) {</span>
+<span class="nc" id="L212">                f = Float.parseFloat(accuracy);</span>
+<span class="nc" id="L213">                acc = (int) (f * 100);</span>
+<span class="nc" id="L214">                histProgressText.setText(acc + &quot;%&quot;);</span>
+<span class="nc" id="L215">                histProgress.setProgress(acc);</span>
+            } else {
+<span class="nc" id="L217">                f = Float.parseFloat(accuracy);</span>
+<span class="nc" id="L218">                acc = (int) (f * 100);</span>
+<span class="nc" id="L219">                totalProgressText.setText(acc + &quot;%&quot;);</span>
+<span class="nc" id="L220">                totalProgress.setProgress(acc);</span>
+            }
+        }
+<span class="fc" id="L223">    }</span>
+
+    private void makeStringReq(long category) {
+        String URL;
+<span class="fc bfc" id="L227" title="All 2 branches covered.">        if (category &gt; 0) {</span>
+<span class="fc" id="L228">            URL = httpServerAddress + URL_BASE + user.getId() + URL_END + category;</span>
+        } else {
+<span class="fc" id="L230">            URL = httpServerAddress + URL_BASE + user.getId() + URL_END_2;</span>
+        }
+<span class="fc" id="L232">        StringRequest stringRequest = new StringRequest(</span>
+                Request.Method.GET,
+                URL,
+<span class="fc" id="L235">                new Response.Listener&lt;String&gt;() {</span>
+                    @Override
+                    public void onResponse(String response) {
+                        // Handle the successful response here
+<span class="fc" id="L239">                        Log.d(&quot;Volley Response&quot;, response);</span>
+<span class="fc" id="L240">                        handleResponse(response, category);</span>
+<span class="fc" id="L241">                    }</span>
+                },
+<span class="fc" id="L243">                new Response.ErrorListener() {</span>
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        // Handle any errors that occur during the request
+<span class="nc" id="L247">                        Log.e(&quot;Volley Error&quot;, error.toString());</span>
+                        String body;
+                        //get status code here
+                        // final String statusCode = String.valueOf(error.networkResponse.statusCode);
+                        //get response body and parse with appropriate encoding
+                        try {
+<span class="nc" id="L253">                            body = new String(error.networkResponse.data, &quot;UTF-8&quot;);</span>
+<span class="nc" id="L254">                            Log.e(&quot;Volley Error&quot;, body);</span>
+<span class="nc" id="L255">                        } catch (UnsupportedEncodingException e) {</span>
+<span class="nc" id="L256">                            Log.e(&quot;Unsupported&quot;, &quot;bad&quot;);</span>
+<span class="nc" id="L257">                        }</span>
+<span class="nc" id="L258">                    }</span>
+                }
+<span class="fc" id="L260">        ) {</span>
+            @Override
+            public Map&lt;String, String&gt; getHeaders() {
+<span class="fc" id="L263">                Map&lt;String, String&gt; headers = new HashMap&lt;&gt;();</span>
+//                headers.put(&quot;Authorization&quot;, &quot;Bearer YOUR_ACCESS_TOKEN&quot;);
+//                headers.put(&quot;Content-Type&quot;, &quot;application/json&quot;);
+<span class="fc" id="L266">                return headers;</span>
+            }
+
+            @Override
+            protected Map&lt;String, String&gt; getParams() {
+<span class="nc" id="L271">                Map&lt;String, String&gt; params = new HashMap&lt;&gt;();</span>
+//                params.put(&quot;param1&quot;, &quot;value1&quot;);
+//                params.put(&quot;param2&quot;, &quot;value2&quot;);
+<span class="nc" id="L274">                return params;</span>
+            }
+        };
+
+        // Adding request to request queue
+<span class="fc" id="L279">        VolleySingleton.getInstance(getApplicationContext()).addToRequestQueue(stringRequest);</span>
+<span class="fc" id="L280">    }</span>
+
+    public static long getCategoryId(String category) {
+<span class="pc bpc" id="L283" title="2 of 7 branches missed.">        switch (category) {</span>
+            case &quot;History&quot;:
+<span class="fc" id="L285">                return 7;</span>
+            case &quot;Pop Culture&quot;:
+<span class="fc" id="L287">                return 2;</span>
+            case &quot;Science&quot;:
+<span class="fc" id="L289">                return 3;</span>
+            case &quot;Fine Arts&quot;:
+<span class="fc" id="L291">                return 4;</span>
+            case &quot;Geography&quot;:
+<span class="fc" id="L293">                return 5;</span>
+            case &quot;All&quot;:
+<span class="nc" id="L295">                return 0;</span>
+            default:
+<span class="nc" id="L297">                return 5;</span>
+        }
+    }
+
+    @Override
+    public void onClick(View v) {
+<span class="fc" id="L303">        int id = v.getId();</span>
+<span class="fc bfc" id="L304" title="All 2 branches covered.">        if (id == R.id.showUsers) {</span>
+<span class="fc" id="L305">            Intent intent = new Intent(MainActivity.this, ShowAllUsersActivity.class);</span>
+<span class="fc" id="L306">            intent.putExtra(&quot;USER&quot;, user);</span>
+<span class="fc" id="L307">            startActivity(intent);</span>
+<span class="pc bpc" id="L308" title="1 of 2 branches missed.">        } else if (id == R.id.deleteUser) {</span>
+<span class="nc" id="L309">            RequestQueue queue = Volley.newRequestQueue(this);</span>
+<span class="nc" id="L310">            String url = MainActivity.httpServerAddress + &quot;/users/deletebyid/&quot; + user.getId();</span>
+<span class="nc" id="L311">            JsonObjectRequest request = new JsonObjectRequest(Request.Method.DELETE, url, null, new Response.Listener&lt;JSONObject&gt;() {</span>
+                @Override
+                public void onResponse(JSONObject response) {
+<span class="nc" id="L314">                    Intent intent = new Intent(MainActivity.this, LoginPageActivity.class);</span>
+<span class="nc" id="L315">                    startActivity(intent);</span>
+<span class="nc" id="L316">                }</span>
+<span class="nc" id="L317">            }, new Response.ErrorListener() {</span>
+                @Override
+                public void onErrorResponse(VolleyError volleyError) {
+<span class="nc" id="L320">                    volleyError.printStackTrace();</span>
+<span class="nc" id="L321">                }</span>
+            });
+<span class="nc" id="L323">            queue.add(request);</span>
+<span class="pc bpc" id="L324" title="1 of 2 branches missed.">        } else if (id == R.id.profilePicture) {</span>
+<span class="nc" id="L325">            Intent intent = new Intent(MainActivity.this, UserProfilePicActivity.class);</span>
+<span class="nc" id="L326">            intent.putExtra(&quot;USER&quot;, user);</span>
+<span class="nc" id="L327">            startActivity(intent);</span>
+<span class="pc bpc" id="L328" title="1 of 2 branches missed.">        } else if (id == R.id.makeAdminButton) {</span>
+<span class="nc" id="L329">            admin.setVisibility(View.VISIBLE);</span>
+<span class="nc" id="L330">            user.makeAdmin();</span>
+<span class="nc" id="L331">            RequestQueue queue = Volley.newRequestQueue(this);</span>
+<span class="nc" id="L332">            JSONObject body = new JSONObject();</span>
+            try {
+<span class="nc" id="L334">                body.put(&quot;id&quot;, user.getId());</span>
+<span class="nc" id="L335">                body.put(&quot;password&quot;, user.getPassword());</span>
+<span class="nc" id="L336">                body.put(&quot;name&quot;, user.getUserName());</span>
+<span class="nc" id="L337">            } catch (Exception e) {</span>
+
+<span class="nc" id="L339">            }</span>
+<span class="nc" id="L340">            String url = MainActivity.httpServerAddress + &quot;/admin/createAdmin&quot;;</span>
+<span class="nc" id="L341">            JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, url, body, new Response.Listener&lt;JSONObject&gt;() {</span>
+                @Override
+                public void onResponse(JSONObject jsonObject) {
+
+<span class="nc" id="L345">                }</span>
+<span class="nc" id="L346">            }, new Response.ErrorListener() {</span>
+                @Override
+                public void onErrorResponse(VolleyError volleyError) {
+
+<span class="nc" id="L350">                }</span>
+            });
+<span class="nc" id="L352">            queue.add(request);</span>
+<span class="pc bpc" id="L353" title="1 of 2 branches missed.">        } else if (id == R.id.adminButton) {</span>
+<span class="fc" id="L354">            Intent intent = new Intent(MainActivity.this, AdminActivity.class);</span>
+<span class="fc" id="L355">            intent.putExtra(&quot;USER&quot;, user);</span>
+<span class="fc" id="L356">            startActivity(intent);</span>
+        }
+<span class="fc" id="L358">    }</span>
+
+    private void makeImageRequest() {
+
+<span class="fc" id="L362">        ImageRequest imageRequest = new ImageRequest(</span>
+<span class="fc" id="L363">                MainActivity.httpServerAddress + &quot;/image/getbyid/&quot; + user.getId(),</span>
+<span class="fc" id="L364">                new Response.Listener&lt;Bitmap&gt;() {</span>
+                    @Override
+                    public void onResponse(Bitmap response) {
+                        // Display the image in the ImageView
+<span class="fc" id="L368">                        profilePicture.setImageBitmap(response);</span>
+<span class="fc" id="L369">                    }</span>
+                },
+                0, // Width, set to 0 to get the original width
+                0, // Height, set to 0 to get the original height
+                ImageView.ScaleType.FIT_XY, // ScaleType
+                Bitmap.Config.RGB_565, // Bitmap config
+
+<span class="fc" id="L376">                new Response.ErrorListener() {</span>
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        // Handle errors here
+<span class="fc" id="L380">                        Log.e(&quot;Volley Error&quot;, error.toString());</span>
+<span class="fc" id="L381">                    }</span>
+                }
+        );
+
+        // Adding request to request queue
+<span class="fc" id="L386">        VolleySingleton2.getInstance(getApplicationContext()).addToRequestQueue(imageRequest);</span>
+<span class="fc" id="L387">    }</span>
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span>Generated by the Android Gradle plugin 7.4.2</div></body></html>

@@ -1,0 +1,192 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=windows-1252"> 
+  <title>Coverage Report > ClientQuestionHistory</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.QuizBowl.questions</a>
+</div>
+
+<h1>Coverage Summary for Class: ClientQuestionHistory (com.QuizBowl.questions)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">ClientQuestionHistory</td>
+<td class="coverageStat">
+  <span class="percent">
+    90%
+  </span>
+  <span class="absValue">
+    (9/10)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    93.8%
+  </span>
+  <span class="absValue">
+    (15/16)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">ClientQuestionHistory$HibernateInstantiator$6t39J7wi</td>
+  </tr>
+  <tr>
+    <td class="name">ClientQuestionHistory$HibernateInstantiator$bta6Ttdc</td>
+  </tr>
+  <tr>
+    <td class="name">ClientQuestionHistory$HibernateProxy$1leBRFNg</td>
+  </tr>
+  <tr>
+    <td class="name">ClientQuestionHistory$HibernateProxy$S4tOdGbQ</td>
+  </tr>
+<tr>
+  <td class="name"><strong>Total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    90%
+  </span>
+  <span class="absValue">
+    (9/10)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    93.8%
+  </span>
+  <span class="absValue">
+    (15/16)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package com.QuizBowl.questions;
+&nbsp;
+&nbsp;import com.QuizBowl.users.Client;
+&nbsp;import com.fasterxml.jackson.annotation.JsonIgnore;
+&nbsp;import com.fasterxml.jackson.core.JsonProcessingException;
+&nbsp;import com.fasterxml.jackson.databind.ObjectMapper;
+&nbsp;import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+&nbsp;import jakarta.persistence.*;
+&nbsp;
+&nbsp;@Entity
+&nbsp;public class ClientQuestionHistory {
+&nbsp;    @Id
+&nbsp;    @GeneratedValue(strategy = GenerationType.IDENTITY)
+&nbsp;    private long hid;
+&nbsp;
+&nbsp;    @JsonIgnore
+&nbsp;    @ManyToOne(cascade = CascadeType.ALL)
+&nbsp;    private Client client;
+&nbsp;
+&nbsp;    @ManyToOne(cascade = CascadeType.PERSIST)
+&nbsp;    private Question question;
+&nbsp;
+&nbsp;    private int correctAnswers;
+&nbsp;    private int incorrectAnswers;
+&nbsp;
+<b class="fc">&nbsp;    public ClientQuestionHistory() {</b>
+&nbsp;    }
+&nbsp;
+<b class="fc">&nbsp;    public ClientQuestionHistory(Client client, Question question) {</b>
+<b class="fc">&nbsp;        this.client = client;</b>
+<b class="fc">&nbsp;        this.question = question;</b>
+<b class="fc">&nbsp;        correctAnswers = 0;</b>
+<b class="fc">&nbsp;        incorrectAnswers = 0;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public long getHid() {
+<b class="fc">&nbsp;        return hid;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public Client getClient() {
+<b class="nc">&nbsp;        return client;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public Question getQuestion() {
+<b class="fc">&nbsp;        return question;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public int getIncorrectAnswers() {
+<b class="fc">&nbsp;        return incorrectAnswers;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public void addIncorrectAnswer() {
+<b class="fc">&nbsp;        incorrectAnswers++;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public int getCorrectAnswers() {
+<b class="fc">&nbsp;        return correctAnswers;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public void addCorrectAnswer() {
+<b class="fc">&nbsp;        correctAnswers++;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public static ClientQuestionHistory getQuestionHistoryFromJSON(String questionHistoryAsString) throws JsonProcessingException {
+<b class="fc">&nbsp;        ObjectMapper objectMapper = new ObjectMapper();</b>
+<b class="fc">&nbsp;        objectMapper.registerModule(new JavaTimeModule());</b>
+<b class="fc">&nbsp;        return objectMapper.readValue(questionHistoryAsString, ClientQuestionHistory.class);</b>
+&nbsp;    }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2024-04-26 22:45</div>
+</div>
+</body>
+</html>

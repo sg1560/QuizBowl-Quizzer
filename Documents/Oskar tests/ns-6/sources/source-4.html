@@ -1,0 +1,236 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=windows-1252"> 
+  <title>Coverage Report > Question</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.QuizBowl.questions</a>
+</div>
+
+<h1>Coverage Summary for Class: Question (com.QuizBowl.questions)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">Question</td>
+<td class="coverageStat">
+  <span class="percent">
+    94.4%
+  </span>
+  <span class="absValue">
+    (17/18)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    88.5%
+  </span>
+  <span class="absValue">
+    (23/26)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">Question$HibernateInstantiator$Ct9y6gcT</td>
+  </tr>
+  <tr>
+    <td class="name">Question$HibernateInstantiator$tfUTJy1P</td>
+  </tr>
+  <tr>
+    <td class="name">Question$HibernateProxy$gG6ctFhi</td>
+  </tr>
+  <tr>
+    <td class="name">Question$HibernateProxy$TyjibM5u</td>
+  </tr>
+<tr>
+  <td class="name"><strong>Total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    94.4%
+  </span>
+  <span class="absValue">
+    (17/18)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    88.5%
+  </span>
+  <span class="absValue">
+    (23/26)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package com.QuizBowl.questions;
+&nbsp;
+&nbsp;import com.QuizBowl.users.Client;
+&nbsp;import com.fasterxml.jackson.annotation.JsonIgnore;
+&nbsp;import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+&nbsp;import com.fasterxml.jackson.core.JsonProcessingException;
+&nbsp;import com.fasterxml.jackson.databind.ObjectMapper;
+&nbsp;import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+&nbsp;import jakarta.persistence.*;
+&nbsp;import org.json.JSONObject;
+&nbsp;
+&nbsp;import java.util.Objects;
+&nbsp;
+&nbsp;@Entity
+&nbsp;@Table(name = &quot;Question&quot;)
+&nbsp;public class Question {
+&nbsp;    @Id
+&nbsp;    @GeneratedValue(strategy = GenerationType.IDENTITY)
+&nbsp;    private Long id;
+&nbsp;    private String question;
+&nbsp;    private String answer;
+&nbsp;    private int points;
+&nbsp;
+&nbsp;    @JsonIgnoreProperties(&quot;questionSet&quot;)
+&nbsp;    @ManyToOne(cascade = CascadeType.REMOVE)
+&nbsp;    @JoinColumn(name = &quot;category_id&quot;, referencedColumnName = &quot;cid&quot;)
+&nbsp;    private Category category;
+&nbsp;
+&nbsp;    @JsonIgnoreProperties(&quot;clientQuestionHistory, teams, questionSet&quot;)
+&nbsp;    @ManyToOne(cascade = CascadeType.REMOVE)
+&nbsp;    @JoinColumn(name = &quot;client_id&quot;, referencedColumnName = &quot;cid&quot;)
+&nbsp;    private Client client;
+&nbsp;
+<b class="fc">&nbsp;    public Question() {</b>
+&nbsp;    }
+&nbsp;
+<b class="fc">&nbsp;    public Question(String question, String answer, int points) {</b>
+<b class="fc">&nbsp;        this.question = question;</b>
+<b class="fc">&nbsp;        this.answer = answer;</b>
+<b class="fc">&nbsp;        this.points = points;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public Long getId() {
+<b class="fc">&nbsp;        return id;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public void setId(Long id) {
+<b class="fc">&nbsp;        this.id = id;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public String getQuestion() {
+<b class="fc">&nbsp;        return question;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public void setQuestion(String question) {
+<b class="fc">&nbsp;        this.question = question;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public String getAnswer() {
+<b class="fc">&nbsp;        return answer;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public void setAnswer(String answer) {
+<b class="fc">&nbsp;        this.answer = answer;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public int getPoints() {
+<b class="fc">&nbsp;        return points;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public void setPoints(int points) {
+<b class="fc">&nbsp;        this.points = points;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public Category getCategory() {
+<b class="fc">&nbsp;        return category;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public void assignCategory(Category category) {
+<b class="fc">&nbsp;        this.category = category;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public Client getClient() {
+<b class="fc">&nbsp;        return client;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public void assignClient(Client c) {
+<b class="fc">&nbsp;        this.client = c;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public static Question getQuestionFromJSON(String questionAsString) throws JsonProcessingException {
+<b class="fc">&nbsp;        ObjectMapper objectMapper = new ObjectMapper();</b>
+<b class="fc">&nbsp;        objectMapper.registerModule(new JavaTimeModule());</b>
+<b class="fc">&nbsp;        return objectMapper.readValue(questionAsString, Question.class);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public JSONObject toJSON() throws JsonProcessingException {
+<b class="nc">&nbsp;        ObjectMapper objectMapper = new ObjectMapper();</b>
+<b class="nc">&nbsp;        objectMapper.registerModule(new JavaTimeModule());</b>
+<b class="nc">&nbsp;        return new JSONObject(objectMapper.writeValueAsString(this));</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public boolean equals(Object o) {
+<b class="fc">&nbsp;        if (!(o instanceof Question)) return false;</b>
+<b class="fc">&nbsp;        return id == ((Question) o).id;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public int hashCode() {
+<b class="fc">&nbsp;        return Objects.hash(id);</b>
+&nbsp;    }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2024-04-26 22:45</div>
+</div>
+</body>
+</html>
